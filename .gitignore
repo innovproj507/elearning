@@ -1,0 +1,10 @@
+# Dependencias
+/vendor/
+
+# Configuración local: contiene JWT_SECRET y credenciales SMTP
+/config/app.php
+
+# Generado en tiempo de ejecución
+/cache/
+/public/uploads/
+*.log

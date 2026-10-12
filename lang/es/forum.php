@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'index' => [
+        'heroTitle'    => 'Foros de Discusión',
+        'heroSubtitle' => 'Comparte conocimientos y resuelve dudas con la comunidad PAMEL',
+        'empty'        => 'Aún no hay foros disponibles.',
+        'topicsCount'  => 'temas',
+    ],
+    'show' => [
+        'breadcrumbForums' => 'Foros',
+        'newTopic'          => 'Nuevo Tema',
+        'emptyTitle'         => 'Aún no hay temas. ¡Sé el primero en publicar!',
+        'createTopic'        => 'Crear Tema',
+        'colTopic'           => 'Tema',
+        'colReplies'         => 'Respuestas',
+        'colDate'            => 'Fecha',
+        'pinned'             => 'Fijado',
+        'postedBy'           => 'por',
+    ],
+    'topic' => [
+        'breadcrumbForums' => 'Foros',
+        'backLink'          => '← Volver',
+        'postedBy'           => 'por',
+        'deleteTopicConfirm' => '¿Eliminar este tema y todas sus respuestas?',
+        'deletePostConfirm'  => '¿Eliminar esta respuesta?',
+        'reply'              => 'respuesta',
+        'replies'            => 'respuestas',
+        'writeReply'         => 'Escribe tu respuesta',
+        'replyPlaceholder'   => 'Escribe tu respuesta aquí...',
+        'submitReply'        => 'Enviar respuesta',
+        'lockedMessage'      => 'Este tema está cerrado y no acepta más respuestas.',
+        'loginPrompt'        => 'Inicia sesión',
+        'loginToParticipate' => 'para participar en este foro.',
+    ],
+    'createTopic' => [
+        'breadcrumbForums' => 'Foros',
+        'breadcrumbCurrent' => 'Nuevo Tema',
+        'heading'            => 'Nuevo Tema',
+        'titleLabel'         => 'Título del tema',
+        'titlePlaceholder'   => 'Escribe un título descriptivo...',
+        'contentLabel'       => 'Contenido',
+        'contentPlaceholder' => 'Describe tu pregunta o tema de discusión con detalle...',
+        'backToForum'        => '← Volver al foro',
+        'publish'            => 'Publicar Tema',
+    ],
+];

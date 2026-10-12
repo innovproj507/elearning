@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'index' => [
+        'heroTitle'    => 'Discussion Forums',
+        'heroSubtitle' => 'Share knowledge and resolve questions with the PAMEL community',
+        'empty'        => 'No forums available yet.',
+        'topicsCount'  => 'topics',
+    ],
+    'show' => [
+        'breadcrumbForums' => 'Forums',
+        'newTopic'          => 'New Topic',
+        'emptyTitle'         => 'No topics yet. Be the first to post!',
+        'createTopic'        => 'Create Topic',
+        'colTopic'           => 'Topic',
+        'colReplies'         => 'Replies',
+        'colDate'            => 'Date',
+        'pinned'             => 'Pinned',
+        'postedBy'           => 'by',
+    ],
+    'topic' => [
+        'breadcrumbForums' => 'Forums',
+        'backLink'          => '← Back',
+        'postedBy'           => 'by',
+        'deleteTopicConfirm' => 'Delete this topic and all its replies?',
+        'deletePostConfirm'  => 'Delete this reply?',
+        'reply'              => 'reply',
+        'replies'            => 'replies',
+        'writeReply'         => 'Write your reply',
+        'replyPlaceholder'   => 'Write your reply here...',
+        'submitReply'        => 'Submit reply',
+        'lockedMessage'      => 'This topic is closed and no longer accepts replies.',
+        'loginPrompt'        => 'Log in',
+        'loginToParticipate' => 'to participate in this forum.',
+    ],
+    'createTopic' => [
+        'breadcrumbForums' => 'Forums',
+        'breadcrumbCurrent' => 'New Topic',
+        'heading'            => 'New Topic',
+        'titleLabel'         => 'Topic title',
+        'titlePlaceholder'   => 'Write a descriptive title...',
+        'contentLabel'       => 'Content',
+        'contentPlaceholder' => 'Describe your question or discussion topic in detail...',
+        'backToForum'        => '← Back to forum',
+        'publish'            => 'Publish Topic',
+    ],
+];

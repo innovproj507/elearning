@@ -1,0 +1,15 @@
+Options -MultiViews -Indexes
+
+RewriteEngine On
+
+# Redirigir a HTTPS en producción (descomenta cuando tengas SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Permitir acceso directo a archivos y carpetas reales (css, js, imágenes, uploads…)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Todo lo demás → index.php (front controller)
+RewriteRule ^ index.php [L,QSA]

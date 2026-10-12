@@ -1,0 +1,21 @@
+# ── Protección de la raíz del proyecto ──────────────────────────────
+# El web root de Apache/Nginx debe apuntar a /public, NO a este directorio.
+# Este archivo es una capa extra de protección por si el servidor está mal
+# configurado y expone la raíz.
+
+Options -Indexes -ExecCGI
+
+# Denegar acceso a todos los archivos sensibles
+<FilesMatch "\.(env|json|lock|sql|md|sh|log|ini|conf|xml|dist)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acceso directo a archivos sensibles de la raíz
+<FilesMatch "^(composer\.(json|lock)|\.env.*)$">
+    Require all denied
+</FilesMatch>
+
+# Si por error el servidor sirve desde aquí, redirigir a /public
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^ /public%{REQUEST_URI} [L,R=301]

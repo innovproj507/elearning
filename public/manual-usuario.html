@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Manual de Usuario — PAMEL LMS</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      color: #1a2540;
+      background: #fff;
+    }
+
+    /* Portada */
+    .cover {
+      padding: 80px 40px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(135deg, #0a1628 0%, #0f2d5a 60%, #0a3d7a 100%);
+      color: white;
+      page-break-after: always;
+    }
+
+    .cover img {
+      max-height: 120px;
+      margin-bottom: 32px;
+    }
+
+    .cover h1 {
+      font-size: 32px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .cover .sub {
+      font-size: 14px;
+      color: #93c5fd;
+      margin-bottom: 40px;
+    }
+
+    .cover .meta {
+      font-size: 12px;
+      color: #60a5fa;
+      margin-top: 40px;
+      border-top: 1px solid rgba(255, 255, 255, .2);
+      padding-top: 20px;
+    }
+
+    /* Índice */
+    .toc {
+      page-break-after: always;
+      padding: 60px 80px;
+    }
+
+    .toc h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f2d5a;
+      border-bottom: 3px solid #f59e0b;
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+    }
+
+    .toc ol {
+      counter-reset: toc;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .toc ol li {
+      counter-increment: toc;
+      padding: 6px 0;
+      border-bottom: 1px dotted #d1d5db;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .toc ol li::before {
+      content: counter(toc) ". ";
+      font-weight: 700;
+      color: #1a56db;
+      margin-right: 8px;
+    }
+
+    .toc .page-num {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    /* Contenido */
+    .content {
+      padding: 50px 80px;
+    }
+
+    h2.section-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f2d5a;
+      border-left: 5px solid #f59e0b;
+      padding-left: 14px;
+      margin: 40px 0 20px;
+      page-break-before: always;
+    }
+
+    h2.section-title:first-child {
+      page-break-before: avoid;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a56db;
+      margin: 24px 0 10px;
+    }
+
+    h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+      margin: 16px 0 8px;
+    }
+
+    p {
+      line-height: 1.7;
+      margin-bottom: 10px;
+      color: #374151;
+    }
+
+    ul,
+    ol {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+
+    li {
+      line-height: 1.8;
+      color: #374151;
+    }
+
+    strong {
+      color: #1a2540;
+    }
+
+    /* Caja de captura */
+    .screenshot-box {
+      border: 2px dashed #1a56db;
+      border-radius: 12px;
+      background: #eff6ff;
+      padding: 28px 20px;
+      text-align: center;
+      margin: 20px 0;
+      color: #1a56db;
+    }
+
+    .screenshot-box .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .screenshot-box .label {
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .screenshot-box .hint {
+      font-size: 11px;
+      color: #60a5fa;
+      margin-top: 4px;
+    }
+
+    /* Nota/tip */
+    .note {
+      background: #fefce8;
+      border-left: 4px solid #f59e0b;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+
+    .note strong {
+      color: #92400e;
+    }
+
+    .tip {
+      background: #f0fdf4;
+      border-left: 4px solid #10b981;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+
+    .tip strong {
+      color: #065f46;
+    }
+
+    .warning {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+
+    .warning strong {
+      color: #991b1b;
+    }
+
+    /* Badge de rol */
+    .role {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .role.admin {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .role.teacher {
+      background: #0369a1;
+      color: white;
+    }
+
+    .role.student {
+      background: #059669;
+      color: white;
+    }
+
+    .role.all {
+      background: #374151;
+      color: white;
+    }
+
+    /* Steps numerados */
+    .steps {
+      counter-reset: steps;
+      padding-left: 0;
+      list-style: none;
+      margin: 14px 0;
+    }
+
+    .steps li {
+      counter-increment: steps;
+      padding: 8px 0 8px 44px;
+      position: relative;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .steps li::before {
+      content: counter(steps);
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #1a56db;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 11px;
+    }
+
+    /* Tabla */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+
+    th {
+      background: #0f2d5a;
+      color: white;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tr:nth-child(even) td {
+      background: #f9fafb;
+    }
+
+    /* Footer */
+    @media print {
+      .cover {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .screenshot-box {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      th {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      h2.section-title {
+        page-break-before: always;
+      }
+
+      h2.section-title:first-of-type {
+        page-break-before: avoid;
+      }
+    }
+
+    @page {
+      margin: 20mm;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════
+     PORTADA
+═══════════════════════════════════════════════════ -->
+  <div class="cover">
+    <img src="/assets/img/logo.png" alt="PAMEL Logo">
+    <h1>Manual de Usuario</h1>
+    <div class="sub">Sistema de Gestión de Aprendizaje (LMS) — PAMEL Maritime Training Center</div>
+    <p style="color:#bfdbfe;max-width:500px;line-height:1.8;">
+      Guía completa para estudiantes, instructores y administradores de la plataforma de formación marítima PAMEL.
+    </p>
+    <div class="meta">
+      Versión 1.0 &nbsp;|&nbsp; Abril 2026 &nbsp;|&nbsp; PAMEL Maritime Training Center — Panamá
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+     ÍNDICE
+═══════════════════════════════════════════════════ -->
+  <div class="toc">
+    <h2>Tabla de Contenidos</h2>
+    <ol>
+      <li>Introducción y acceso a la plataforma <span class="page-num">3</span></li>
+      <li>Roles de usuario <span class="page-num">4</span></li>
+      <li>Guía del Estudiante <span class="page-num">5</span></li>
+      <li>Guía del Instructor <span class="page-num">9</span></li>
+      <li>Guía del Administrador <span class="page-num">14</span></li>
+      <li>Preguntas frecuentes (FAQ) <span class="page-num">18</span></li>
+      <li>Soporte técnico <span class="page-num">19</span></li>
+    </ol>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 1 — INTRODUCCIÓN
+═══════════════════════════════════════════════════ -->
+  <div class="content">
+
+    <h2 class="section-title">1. Introducción y acceso a la plataforma</h2>
+
+    <p>
+      <strong>PAMEL LMS</strong> es el sistema de gestión de aprendizaje del Maritime Training Center de Panamá.
+      Permite a instructores crear cursos con lecciones, evaluaciones y seguimiento del progreso, y a los
+      estudiantes completar su formación marítima de forma autónoma desde cualquier dispositivo.
+    </p>
+
+    <h3>1.1 Requisitos</h3>
+    <ul>
+      <li>Navegador web moderno: Chrome, Firefox, Edge o Safari (versión reciente)</li>
+      <li>Conexión a internet estable</li>
+      <li>Cuenta registrada en la plataforma (proporcionada por PAMEL)</li>
+    </ul>
+
+    <h3>1.2 Cómo ingresar</h3>
+    <ol class="steps">
+      <li>Abre tu navegador y visita la dirección web de la plataforma.</li>
+      <li>Haz clic en <strong>"Iniciar Sesión"</strong> en la esquina superior derecha.</li>
+      <li>Ingresa tu correo electrónico y contraseña.</li>
+      <li>Haz clic en <strong>"Iniciar Sesión"</strong>. Serás redirigido a tu panel según tu rol.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 1 — Pantalla de inicio de sesión</div>
+      <div class="hint"><img src="capturas/01-login.png" alt="Pantalla de login"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;">
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Nota:</strong> Si olvidaste tu contraseña, haz clic en <em>"¿Olvidaste tu contraseña?"</em>
+      e ingresa tu correo para recibir un enlace de recuperación.
+    </div>
+
+    <h3>1.3 Cerrar sesión</h3>
+    <p>Haz clic en tu nombre/avatar en la esquina superior derecha y selecciona <strong>"Cerrar Sesión"</strong>.</p>
+
+    <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 2 — ROLES
+═══════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Roles de usuario</h2>
+
+    <p>La plataforma tiene tres tipos de usuario con diferentes permisos:</p>
+
+    <table>
+      <tr>
+        <th>Rol</th>
+        <th>Descripción</th>
+        <th>Accesos principales</th>
+      </tr>
+      <tr>
+        <td><span class="role student">Estudiante</span></td>
+        <td>Aprende y completa cursos</td>
+        <td>Ver cursos, inscribirse, ver lecciones, realizar evaluaciones, ver su progreso</td>
+      </tr>
+      <tr>
+        <td><span class="role teacher">Instructor</span></td>
+        <td>Crea y gestiona cursos</td>
+        <td>Crear/editar cursos propios, agregar lecciones y quizzes, ver estudiantes inscritos</td>
+      </tr>
+      <tr>
+        <td><span class="role admin">Administrador</span></td>
+        <td>Gestiona toda la plataforma</td>
+        <td>Todo lo anterior + gestión de usuarios, acceso a todos los cursos, reportes</td>
+      </tr>
+    </table>
+
+    <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 3 — GUÍA DEL ESTUDIANTE
+═══════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. Guía del Estudiante <span class="role student">Estudiante</span></h2>
+
+    <h3>3.1 Panel de inicio (Dashboard)</h3>
+    <p>
+      Al iniciar sesión, el estudiante ve su <strong>panel personal</strong> con:
+    </p>
+    <ul>
+      <li>Cursos en los que está inscrito, con barra de progreso</li>
+      <li>Número de lecciones completadas y pendientes</li>
+      <li>Acceso rápido para continuar donde lo dejó</li>
+    </ul>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 2 — Dashboard del estudiante</div>
+      <div class="hint"><img src="capturas/02-dashboard-estudiantes.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>3.2 Explorar el catálogo de cursos</h3>
+    <ol class="steps">
+      <li>En el menú superior, haz clic en <strong>"Cursos"</strong>.</li>
+      <li>Usa los filtros de categoría en el panel izquierdo para encontrar el curso.</li>
+      <li>Haz clic en la tarjeta del curso para ver su detalle.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 3 — Catálogo de cursos</div>
+      <div class="hint"><img src="capturas/03-catalogo-cursos.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>3.3 Inscribirse en un curso</h3>
+    <p>
+      La inscripción en PAMEL requiere completar un <strong>formulario de admisión</strong> previo.
+      El proceso es el siguiente:
+    </p>
+    <ol class="steps">
+      <li>Abre el detalle del curso que deseas tomar.</li>
+      <li>En el panel lateral derecho, haz clic en el botón <strong>"Solicitar Admisión"</strong>.</li>
+      <li>Serás redirigido al formulario de admisión oficial de PAMEL:<br>
+        <strong style="color:#1a56db;">https://pamel.edu.pa/formulario-de-admision</strong>
+      </li>
+      <li>Completa todos los campos del formulario con tus datos personales y académicos.</li>
+      <li>Envía el formulario. El equipo de PAMEL revisará tu solicitud.</li>
+      <li>Una vez aprobada tu admisión, el administrador habilitará tu acceso al curso en la plataforma.</li>
+      <li>Recibirás tus credenciales de acceso por correo electrónico.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 4 — Detalle de curso con botón "Solicitar Admisión"</div>
+      <div class="hint"><img src="capturas/04-detalle-curso.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <div class="note">
+      <strong>Importante:</strong> La inscripción no es automática. Después de enviar el formulario de admisión,
+      debes esperar la confirmación del equipo PAMEL antes de poder acceder al contenido del curso.
+    </div>
+
+    <div class="tip">
+      <strong>¿Ya fuiste admitido?</strong> Si el administrador ya habilitó tu acceso, el botón cambiará a
+      <em>"Continuar Curso"</em> y podrás acceder directamente a las lecciones desde tu dashboard.
+    </div>
+
+    <h3>3.4 Tomar una lección</h3>
+    <ol class="steps">
+      <li>Desde el detalle del curso o tu dashboard, haz clic en el nombre de la lección.</li>
+      <li>Lee el contenido. La <strong>barra de progreso de lectura</strong> en la parte superior muestra cuánto has
+        avanzado en la página.</li>
+      <li>Al terminar de leer, haz clic en <strong>"Marcar como completada"</strong> (aparece al llegar al 85% de la
+        página).</li>
+      <li>La lección quedará marcada con un ✓ verde en el índice del curso.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 5 — Vista de una lección</div>
+      <div class="hint"><img src="capturas/05-vista-leccion.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <div class="note">
+      <strong>Navegación:</strong> Usa los botones <em>"← Anterior"</em> y <em>"Siguiente →"</em> al pie de cada lección
+      para moverte entre lecciones. También puedes usar las teclas <strong>← →</strong> del teclado.
+    </div>
+
+    <h3>3.5 Ver imágenes en las lecciones</h3>
+    <p>
+      Haz clic en cualquier imagen dentro de una lección para verla en pantalla completa (modo lightbox).
+      Presiona <strong>ESC</strong> o haz clic fuera de la imagen para cerrar.
+    </p>
+    <p>
+      Usa los botones <strong>A-</strong> y <strong>A+</strong> en la esquina superior derecha del contenido
+      para ajustar el tamaño del texto según tu preferencia.
+    </p>
+
+    <h3>3.6 Realizar una evaluación (Quiz)</h3>
+    <ol class="steps">
+      <li>En el índice del curso, las evaluaciones aparecen con el ícono 📝 junto a las lecciones.</li>
+      <li>Haz clic en el nombre de la evaluación para comenzar.</li>
+      <li>Lee cada pregunta y selecciona la respuesta correcta haciendo clic en ella.</li>
+      <li>La pregunta seleccionada se resalta en azul para confirmar tu selección.</li>
+      <li>La barra superior muestra cuántas preguntas has respondido de un total.</li>
+      <li>Si el quiz tiene tiempo límite, verás un cronómetro. Al llegar a 0, se envía automáticamente.</li>
+      <li>Haz clic en <strong>"Enviar respuestas"</strong> para finalizar.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 6 — Pantalla de quiz en progreso</div>
+      <div class="hint"><img src="capturas/06-pantalla-quiz.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <div class="warning">
+      <strong>Atención:</strong> Si intentas enviar con preguntas sin responder, el sistema te avisará.
+      Puedes confirmar el envío o regresar a responderlas.
+    </div>
+
+    <h3>3.7 Ver los resultados de la evaluación</h3>
+    <p>Al enviar la evaluación verás:</p>
+    <ul>
+      <li><strong>Puntaje obtenido</strong> con animación circular</li>
+      <li>Cantidad de preguntas correctas e incorrectas</li>
+      <li>Puntaje mínimo para aprobar</li>
+      <li>Revisión detallada: qué respondiste vs. la respuesta correcta en cada pregunta</li>
+    </ul>
+    <p>Si <strong>aprobaste</strong>, verás confetti de celebración y el trofeo 🏆.</p>
+    <p>Si no aprobaste, puedes hacer clic en <strong>"Intentar de nuevo"</strong>.</p>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 7 — Pantalla de resultados del quiz</div>
+      <div class="hint"><img src="capturas/07-resultados-quiz.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>3.8 Formulario de satisfacción</h3>
+    <p>
+      Al completar todas las lecciones del curso, aparecerá en el panel lateral un botón de
+      <strong>"Formulario de Satisfacción"</strong>. Complétalo para compartir tu opinión sobre el curso.
+      Este formulario es requerido por PAMEL como parte del proceso de certificación.
+    </p>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 8 — Botón de formulario de satisfacción habilitado</div>
+      <div class="hint"><img src="capturas/08-formulario-satisfaccion.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 4 — GUÍA DEL INSTRUCTOR
+═══════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. Guía del Instructor <span class="role teacher">Instructor</span></h2>
+
+    <h3>4.1 Panel del instructor (Dashboard)</h3>
+    <p>El instructor ve en su dashboard:</p>
+    <ul>
+      <li>Lista de sus cursos creados con estado (Borrador / Publicado / Archivado)</li>
+      <li>Accesos rápidos para crear cursos, agregar lecciones y quizzes</li>
+      <li>Número de estudiantes inscritos por curso</li>
+    </ul>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 9 — Dashboard del instructor</div>
+      <div class="hint"><img src="capturas/09-dashboard-instructor.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>4.2 Crear un curso</h3>
+    <ol class="steps">
+      <li>En el dashboard, haz clic en <strong>"Nuevo Curso"</strong>.</li>
+      <li>Completa el formulario:
+        <ul>
+          <li><strong>Título:</strong> nombre del curso (obligatorio)</li>
+          <li><strong>Descripción:</strong> objetivos, contenidos y público objetivo</li>
+          <li><strong>Categoría:</strong> área temática del curso</li>
+          <li><strong>Nivel:</strong> Principiante, Intermedio o Avanzado</li>
+          <li><strong>Precio:</strong> en USD (puede ser 0 si es gratuito)</li>
+          <li><strong>Gratuito:</strong> activa este toggle para que los estudiantes se inscriban sin pago</li>
+          <li><strong>Estado:</strong> Borrador (solo visible para ti) o Publicado (visible para todos)</li>
+          <li><strong>Imagen de portada:</strong> sube una imagen JPG, PNG o WebP (máx. 10MB)</li>
+        </ul>
+      </li>
+      <li>Haz clic en <strong>"Crear Curso"</strong>.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 10 — Formulario de creación de curso</div>
+      <div class="hint"><img src="capturas/10-formulario-creacion-curso.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <div class="note">
+      <strong>Estado Borrador:</strong> El curso no aparece en el catálogo público hasta que lo cambies a
+      <em>"Publicado"</em>. Úsalo mientras preparas el contenido.
+    </div>
+
+    <h3>4.3 Editar un curso existente</h3>
+    <ol class="steps">
+      <li>En el dashboard, haz clic en el ícono de editar ✏️ del curso.</li>
+      <li>Modifica los campos necesarios.</li>
+      <li>Para habilitar el formulario de satisfacción al final del curso, activa la opción
+        <strong>"Habilitar formulario de satisfacción al finalizar el curso"</strong>.
+      </li>
+      <li>Haz clic en <strong>"Guardar Cambios"</strong>.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 11 — Formulario de edición de curso</div>
+      <div class="hint"><img src="capturas/11-formulario-edicion-curso.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>4.4 Agregar lecciones</h3>
+    <ol class="steps">
+      <li>Abre el detalle del curso (haz clic en su título).</li>
+      <li>En la sección de lecciones, haz clic en <strong>"+ Nueva Lección"</strong>.</li>
+      <li>Completa el formulario:
+        <ul>
+          <li><strong>Título:</strong> nombre de la lección</li>
+          <li><strong>Orden:</strong> número que define la posición en el índice</li>
+          <li><strong>Contenido:</strong> usa el editor de texto enriquecido para escribir el contenido</li>
+        </ul>
+      </li>
+      <li>Haz clic en <strong>"Guardar Lección"</strong>.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 12 — Editor de lección con CKEditor</div>
+      <div class="hint"><img src="capturas/12-editor-leccion.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h4>Opciones del editor de contenido</h4>
+    <table>
+      <tr>
+        <th>Botón</th>
+        <th>Función</th>
+      </tr>
+      <tr>
+        <td>Párrafo / Título 1-3</td>
+        <td>Define el estilo del texto seleccionado</td>
+      </tr>
+      <tr>
+        <td><strong>N</strong> / <em>I</em> / <u>S</u></td>
+        <td>Negrita, Cursiva, Subrayado</td>
+      </tr>
+      <tr>
+        <td>Lista • / Lista 1.</td>
+        <td>Lista con viñetas o numerada</td>
+      </tr>
+      <tr>
+        <td>Cita</td>
+        <td>Formato de cita destacada</td>
+      </tr>
+      <tr>
+        <td>Tabla</td>
+        <td>Inserta una tabla editable</td>
+      </tr>
+      <tr>
+        <td>Enlace 🔗</td>
+        <td>Agrega un hipervínculo al texto seleccionado</td>
+      </tr>
+      <tr>
+        <td>Imagen 🖼️</td>
+        <td>Sube una imagen directamente al contenido</td>
+      </tr>
+      <tr>
+        <td>Línea horizontal</td>
+        <td>Separador visual entre secciones</td>
+      </tr>
+    </table>
+
+    <div class="tip">
+      <strong>Subir imágenes al contenido:</strong> Haz clic en el ícono de imagen en el editor,
+      selecciona el archivo desde tu computadora y se insertará automáticamente en el contenido.
+    </div>
+
+    <h3>4.5 Reordenar lecciones</h3>
+    <p>
+      El campo <strong>"Orden"</strong> en cada lección determina su posición en el índice.
+      Edita el valor numérico para cambiar el orden: la lección con orden 1 aparece primera.
+    </p>
+
+    <h3>4.6 Crear evaluaciones (Quizzes)</h3>
+    <ol class="steps">
+      <li>Abre el detalle del curso.</li>
+      <li>En la sección de evaluaciones, haz clic en <strong>"+ Nueva Evaluación"</strong>.</li>
+      <li>Completa:
+        <ul>
+          <li><strong>Título:</strong> nombre de la evaluación</li>
+          <li><strong>Porcentaje mínimo para aprobar:</strong> ej. 70 (el estudiante necesita 70% para pasar)</li>
+          <li><strong>Tiempo límite:</strong> en minutos (0 = sin límite)</li>
+        </ul>
+      </li>
+      <li>Guarda y luego agrega las preguntas haciendo clic en <strong>"+ Agregar Pregunta"</strong>.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 13 — Formulario de creación de quiz</div>
+      <div class="hint"><img src="capturas/13-formulario-creacion-quiz.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>4.7 Agregar preguntas al quiz</h3>
+    <ol class="steps">
+      <li>Desde el detalle del quiz, haz clic en <strong>"+ Nueva Pregunta"</strong>.</li>
+      <li>Escribe el enunciado de la pregunta.</li>
+      <li>Agrega las opciones de respuesta (mínimo 2, máximo 4).</li>
+      <li>Marca cuál es la respuesta correcta.</li>
+      <li>Guarda la pregunta y repite para todas las preguntas del quiz.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 14 — Formulario de nueva pregunta</div>
+      <div class="hint"><img src="capturas/14-formulario-nueva-pregunta.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>4.8 Eliminar un curso</h3>
+    <p>
+      Desde el dashboard, haz clic en el ícono de eliminar 🗑️ del curso.
+      El sistema pedirá confirmación antes de borrar. <strong>Esta acción no se puede deshacer.</strong>
+    </p>
+
+    <div class="warning">
+      <strong>Advertencia:</strong> Eliminar un curso borra también todas sus lecciones, quizzes,
+      preguntas y el progreso de los estudiantes. Considera archivarlo en lugar de eliminarlo.
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 5 — GUÍA DEL ADMINISTRADOR
+═══════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Guía del Administrador <span class="role admin">Admin</span></h2>
+
+    <h3>5.1 Panel del administrador</h3>
+    <p>El administrador tiene acceso a todo lo que tiene el instructor, más:</p>
+    <ul>
+      <li>Gestión de usuarios (crear, editar, asignar roles)</li>
+      <li>Acceso a todos los cursos (no solo los propios)</li>
+      <li>Gestión de categorías</li>
+      <li>Inscripción manual de estudiantes</li>
+    </ul>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 15 — Dashboard del administrador</div>
+      <div class="hint"><img src="capturas/15-dashboard-admin.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>5.2 Gestión de usuarios</h3>
+
+    <h4>Crear un usuario</h4>
+    <ol class="steps">
+      <li>En el dashboard, ve a <strong>Usuarios → Nuevo Usuario</strong>.</li>
+      <li>Ingresa: nombre, correo electrónico, contraseña inicial y rol (estudiante/instructor/admin).</li>
+      <li>Haz clic en <strong>"Crear Usuario"</strong>.</li>
+      <li>El usuario recibirá sus credenciales por correo (si el SMTP está configurado).</li>
+    </ol>
+
+    <h4>Editar o cambiar el rol de un usuario</h4>
+    <ol class="steps">
+      <li>Ve a la lista de usuarios y haz clic en <strong>"Editar"</strong> en el usuario correspondiente.</li>
+      <li>Modifica los campos necesarios, incluyendo el rol.</li>
+      <li>Guarda los cambios.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 16 — Lista de usuarios con botones de acción</div>
+      <div class="hint"><img src="capturas/16-lista-usuarios.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>5.3 Gestión de categorías</h3>
+    <p>
+      Las categorías organizan los cursos en el catálogo. Desde el menú lateral del administrador,
+      haz clic en <strong>Categorías</strong> para crear, editar o eliminar categorías.
+    </p>
+    <ol class="steps">
+      <li>Ve a <strong>Dashboard → Categorías</strong> en el menú lateral.</li>
+      <li>Para crear: escribe el nombre y haz clic en <strong>"+ Agregar"</strong>.</li>
+      <li>Para editar: haz clic en <strong>"Editar"</strong> en la fila correspondiente, modifica el nombre y guarda.
+      </li>
+      <li>Para eliminar: haz clic en <strong>"Eliminar"</strong> y confirma. Los cursos de esa categoría quedarán sin
+        categoría asignada.</li>
+    </ol>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 17 — Gestión de categorías</div>
+      <div class="hint"><img src="capturas/17-gestion-categorias.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <h3>5.4 Inscribir manualmente a un estudiante</h3>
+    <p>
+      Si un estudiante realizó el pago fuera de la plataforma, el administrador puede inscribirlo manualmente:
+    </p>
+    <ol class="steps">
+      <li>Abre el detalle del curso como administrador.</li>
+      <li>En la sección de estudiantes inscritos, haz clic en <strong>"Inscribir Estudiante"</strong>.</li>
+      <li>Busca al usuario por nombre o correo y confírmalo.</li>
+    </ol>
+
+    <h3>5.5 Habilitar/deshabilitar formulario de satisfacción</h3>
+    <ol class="steps">
+      <li>Ve al curso que deseas configurar.</li>
+      <li>Haz clic en <strong>"Editar Curso"</strong>.</li>
+      <li>Activa o desactiva el toggle <strong>"Habilitar formulario de satisfacción"</strong>.</li>
+      <li>Guarda los cambios.</li>
+    </ol>
+    <p>
+      Cuando está habilitado, al completar todas las lecciones el estudiante verá el botón para acceder
+      al formulario externo de satisfacción.
+    </p>
+
+    <h3>5.6 Cambiar el estado de un curso</h3>
+    <table>
+      <tr>
+        <th>Estado</th>
+        <th>Visible en catálogo</th>
+        <th>Estudiantes pueden acceder</th>
+      </tr>
+      <tr>
+        <td>📝 Borrador</td>
+        <td>No (solo instructor/admin)</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>✅ Publicado</td>
+        <td>Sí</td>
+        <td>Sí (si están inscritos)</td>
+      </tr>
+      <tr>
+        <td>🗄️ Archivado</td>
+        <td>No</td>
+        <td>Solo si ya estaban inscritos</td>
+      </tr>
+    </table>
+
+    <div class="screenshot-box">
+      <div class="icon">📸</div>
+      <div class="label">CAPTURA 18 — Selector de estado en el formulario de edición</div>
+      <div class="hint"><img src="capturas/18-selector-estado.png" alt="Pantalla de dashboard del estudiante"
+          style="width:100%;border-radius:12px;border:1px solid #e5e7eb;margin:16px 0;"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 6 — FAQ
+═══════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Preguntas frecuentes (FAQ)</h2>
+
+    <h3>¿Por qué no veo el botón "Inscribirme"?</h3>
+    <p>
+      Si ya estás inscrito en el curso, el botón cambia a <strong>"Continuar Curso"</strong>.
+      Si el curso tiene costo, el administrador debe habilitar tu inscripción manualmente después del pago.
+    </p>
+
+    <h3>¿Puedo repetir una evaluación si no aprobé?</h3>
+    <p>
+      Sí. Haz clic en <strong>"Intentar de nuevo"</strong> en la pantalla de resultados. Puedes realizarla
+      las veces que sean necesarias.
+    </p>
+
+    <h3>¿Cómo sé que completé el curso?</h3>
+    <p>
+      El curso se considera completo cuando todas las lecciones tienen la marca ✓ verde.
+      En ese momento, el formulario de satisfacción (si está habilitado) se activa en el panel lateral.
+    </p>
+
+    <h3>¿Puedo acceder desde el celular?</h3>
+    <p>
+      Sí. La plataforma es completamente responsiva y funciona en smartphones y tablets.
+      Se recomienda el modo horizontal para ver las evaluaciones más cómodamente.
+    </p>
+
+    <h3>¿Qué hago si el contenido de una lección no carga?</h3>
+    <p>
+      Refresca la página con <strong>F5</strong> o <strong>Ctrl+R</strong>. Si el problema persiste,
+      limpia la caché del navegador (Ctrl+Shift+Delete) y vuelve a intentarlo.
+    </p>
+
+    <h3>¿Cómo cambio mi contraseña?</h3>
+    <p>
+      En la página de inicio de sesión, haz clic en <strong>"¿Olvidaste tu contraseña?"</strong> e ingresa
+      tu correo. Recibirás un enlace para crear una nueva contraseña.
+    </p>
+
+    <h3>¿El progreso se guarda automáticamente?</h3>
+    <p>
+      Sí. Al hacer clic en <strong>"Marcar como completada"</strong>, el sistema guarda inmediatamente
+      tu progreso. No es necesario hacer nada adicional.
+    </p>
+
+    <!-- ═══════════════════════════════════════════════════
+     SECCIÓN 7 — SOPORTE
+═══════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Soporte técnico</h2>
+
+    <p>Para reportar problemas o solicitar ayuda, contacta al equipo de PAMEL:</p>
+
+    <table>
+      <tr>
+        <th>Canal</th>
+        <th>Contacto</th>
+        <th>Horario</th>
+      </tr>
+      <tr>
+        <td>Correo electrónico</td>
+        <td>info@pamel.com.pa</td>
+        <td>Lunes a viernes, 8am – 5pm</td>
+      </tr>
+      <tr>
+        <td>WhatsApp</td>
+        <td>+507 6298-8137</td>
+        <td>Lunes a viernes, 8am – 5pm</td>
+      </tr>
+      <tr>
+        <td>Plataforma</td>
+        <td>Formulario de contacto en el sitio</td>
+        <td>24/7 (respuesta en 24h hábiles)</td>
+      </tr>
+    </table>
+
+    <div class="tip" style="margin-top:24px;">
+      <strong>Al reportar un problema incluye:</strong>
+      <ul style="margin-top:6px;">
+        <li>Tu nombre y correo electrónico</li>
+        <li>Nombre del curso o lección donde ocurrió el problema</li>
+        <li>Descripción de lo que esperabas y lo que ocurrió</li>
+        <li>Captura de pantalla del error (si es posible)</li>
+        <li>Navegador y dispositivo que usas</li>
+      </ul>
+    </div>
+
+    <div
+      style="margin-top:60px; padding-top:20px; border-top:2px solid #e5e7eb; text-align:center; color:#9ca3af; font-size:11px;">
+      Manual de Usuario — PAMEL &nbsp;|&nbsp; Versión 1.0 &nbsp;|&nbsp; Abril 2026<br>
+      Panama Maritine E-Learning, S.A. — Panamá<br>
+      Este documento es de uso interno. Todos los derechos reservados.
+    </div>
+
+  </div><!-- /content -->
+</body>
+
+</html>

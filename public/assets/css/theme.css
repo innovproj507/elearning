@@ -1,0 +1,77 @@
+/**
+ * Tema del panel PAMEL.
+ *
+ * Lo cargan tanto views/layouts/main.php (estudiantes e instructores) como
+ * views/layouts/dashboard.php (administración), para que los componentes
+ * existan en todas las pantallas y no solo en una.
+ */
+
+:root {
+    --navy-top:    #1b3a78;
+    --navy-bottom: #0d1f47;
+    --canvas:      #eef2f9;
+    --card-border: #e8edf6;
+    --ink:         #1e293b;
+    --ink-soft:    #64748b;
+}
+
+/* ── Tarjetas ─────────────────────────────────────────────────────────── */
+.card {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+}
+.card-pad { padding: 20px 22px; }
+
+/* ── Azulejos de icono en pastel ──────────────────────────────────────── */
+.tile {
+    width: 46px; height: 46px;
+    border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.tile svg { width: 20px; height: 20px; }
+
+.tile-blue    { background: #e7effe; color: #2563eb; }
+.tile-emerald { background: #e3f7ee; color: #059669; }
+.tile-violet  { background: #f0e9fe; color: #7c3aed; }
+.tile-amber   { background: #fff2de; color: #d97706; }
+.tile-rose    { background: #fde9ee; color: #e11d48; }
+
+/* ── Indicadores ──────────────────────────────────────────────────────── */
+.stat-value { font-size: 26px; font-weight: 800; line-height: 1.1; color: var(--ink); }
+.stat-label { font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 2px; }
+.stat-foot  { font-size: 10.5px; font-weight: 700; margin-top: 3px; }
+
+/* ── Fila de resumen dentro de un panel ───────────────────────────────── */
+.stat-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13.5px;
+    padding: 9px 12px;
+    border-radius: 11px;
+    transition: background .15s;
+}
+.stat-row:hover { background: #f8fafc; }
+.stat-row.is-active { background: #eff4ff; }
+.stat-row .label { font-weight: 600; color: #64748b; }
+.stat-row.is-active .label { color: #1d4ed8; }
+.stat-row .value { font-weight: 800; }
+
+/* ── Buscador de la barra superior ────────────────────────────────────── */
+.topbar-search {
+    background: #f4f6fb;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 8px 14px 8px 38px;
+    font-size: 12.5px;
+    width: 240px;
+    transition: border-color .15s, background .15s;
+}
+.topbar-search:focus { outline: none; background: #fff; border-color: #c7d7f5; }
+@media (max-width: 1024px) { .topbar-search { width: 150px; } }
+
+/* ── Lienzo del panel ─────────────────────────────────────────────────── */
+/* Solo donde se pide de forma explícita, para no alterar las páginas
+   públicas que comparten layouts/main.php. */
+.app-canvas { background: var(--canvas); }
