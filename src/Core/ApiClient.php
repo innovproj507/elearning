@@ -150,10 +150,15 @@ class ApiClient
         $url = $this->baseUrl . '/' . ltrim($endpoint, '/');
 
         // Reutilizar el handle cURL dentro del proceso PHP (keep-alive)
+        //
+        // El tiempo de espera es corto a propósito. El CMS contesta en unos
+        // 40 ms; si tarda segundos no es que esté pensando, es que la
+        // petición quedó encolada detrás de esta misma. Esperar 5 s no la
+        // rescata, sólo retrasa el reintento, que es lo que sí funciona.
         if (self::$ch === null) {
             self::$ch = curl_init();
             curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt(self::$ch, CURLOPT_TIMEOUT, 5);
+            curl_setopt(self::$ch, CURLOPT_TIMEOUT, 2);
             curl_setopt(self::$ch, CURLOPT_CONNECTTIMEOUT, 2);
             curl_setopt(self::$ch, CURLOPT_TCP_KEEPALIVE, 1);
             curl_setopt(self::$ch, CURLOPT_TCP_KEEPIDLE, 10);
@@ -184,9 +189,27 @@ class ApiClient
             curl_setopt($ch, CURLOPT_POSTFIELDS, null);
         }
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error    = curl_error($ch);
+        // Un fallo de transporte se reintenta una vez.
+        //
+        // El CMS y el LMS comparten el mismo grupo de procesos PHP. Una
+        // página del LMS ocupa uno mientras llama al CMS, y si esa llamada
+        // cae en el proceso que ella misma está ocupando, ninguno de los dos
+        // avanza. El servidor aparta unos instantes al que se atascó, así
+        // que el reintento entra por otro y sale adelante.
+        $intentos = 0;
+        do {
+            $intentos++;
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error    = curl_error($ch);
+
+            if (!$error) {
+                break;
+            }
+            if ($intentos === 1) {
+                error_log("LMS API reintento tras fallo ({$url}): {$error}");
+            }
+        } while ($intentos < 2);
 
         $this->lastTransportError = null;
 
