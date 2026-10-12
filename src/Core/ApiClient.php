@@ -23,6 +23,17 @@ class ApiClient
     private string $cacheDir;
     private int $cacheTtl = 30;
 
+    /**
+     * Motivo del último fallo de transporte (timeout, conexión rechazada,
+     * error 5xx). Queda a null si el CMS respondió correctamente, incluso
+     * cuando la respuesta fue un 404.
+     *
+     * Permite a quien llama distinguir "no existe" de "no contestó", que
+     * es lo que evita mostrar al estudiante un 404 cuando en realidad el
+     * CMS no respondió a tiempo.
+     */
+    private ?string $lastTransportError = null;
+
     private function __construct()
     {
         $this->baseUrl  = rtrim($_ENV['API_BASE_URL'] ?? 'http://cms.test/api', '/');
@@ -46,6 +57,14 @@ class ApiClient
     {
         $this->token = $token;
         $_SESSION['api_token'] = $token;
+    }
+
+    /**
+     * Motivo del último fallo de transporte, o null si el CMS respondió.
+     */
+    public function lastTransportError(): ?string
+    {
+        return $this->lastTransportError;
     }
 
     public function clearCache(): void
@@ -169,13 +188,21 @@ class ApiClient
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error    = curl_error($ch);
 
+        $this->lastTransportError = null;
+
         if ($error) {
+            $this->lastTransportError = $error;
             error_log("LMS API cURL error ({$url}): {$error}");
             return false;
         }
 
         if ($httpCode >= 200 && $httpCode < 300) {
             return json_decode($response, true);
+        }
+
+        // Un 5xx es un fallo del CMS, no una respuesta de "no existe".
+        if ($httpCode >= 500) {
+            $this->lastTransportError = "HTTP {$httpCode}";
         }
 
         error_log("LMS API HTTP {$httpCode} ({$url}) body: " . substr($response, 0, 500));

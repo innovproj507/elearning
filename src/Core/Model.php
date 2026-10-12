@@ -51,12 +51,25 @@ abstract class Model
     public function findOrFail(int|string $id): array
     {
         $result = $this->find($id);
-        if (!$result) {
-            http_response_code(404);
-            include BASE_PATH . '/views/errors/404.php';
+        if ($result) {
+            return $result;
+        }
+
+        // Si el CMS no respondió (timeout, conexión, 5xx) esto NO es un
+        // "no existe": mostrar 404 manda al estudiante a buscar una lección
+        // que sí está ahí, y oculta la avería real.
+        $fallo = $this->api->lastTransportError();
+        if ($fallo !== null) {
+            error_log("LMS: {$this->table}/{$id} no se pudo consultar: {$fallo}");
+            http_response_code(503);
+            header('Retry-After: 10');
+            include BASE_PATH . '/views/errors/500.php';
             exit;
         }
-        return $result;
+
+        http_response_code(404);
+        include BASE_PATH . '/views/errors/404.php';
+        exit;
     }
 
     protected function generateSlug(string $text): string
