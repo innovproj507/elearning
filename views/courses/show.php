@@ -261,16 +261,30 @@ $_csrfToken   = \App\Core\CSRF::generate();
                 </h2>
 
                 <?php if ($_objetivos): ?>
-                <ul class="space-y-2 <?= !empty($lessons) ? 'mb-5 pb-5 border-b border-gray-100' : '' ?>">
-                    <?php foreach ($_objetivos as $_i => $_o): ?>
-                    <li class="flex items-start gap-3 p-3 rounded-xl border border-gray-100">
-                        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-black flex items-center justify-center flex-shrink-0">
-                            <?= $_i + 1 ?>
-                        </span>
-                        <span class="flex-1 text-sm text-gray-700 leading-snug pt-1.5"><?= htmlspecialchars($_o) ?></span>
-                    </li>
+                <?php /*
+                    Las entradas que empiezan por "F" son el nombre de una
+                    función y se pintan como cabecera; las "C" son sus
+                    competencias y van numeradas dentro de cada función.
+                */ ?>
+                <div class="<?= !empty($lessons) ? 'mb-5 pb-5 border-b border-gray-100' : '' ?>">
+                    <?php $_n = 0; foreach ($_objetivos as $_o): ?>
+                        <?php if (preg_match('/^F\d+\./', $_o)): $_n = 0; ?>
+                        <h3 class="font-black text-navy text-sm mt-5 first:mt-0 mb-2 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-brand-50 text-brand-500 text-[10px] font-black flex items-center justify-center flex-shrink-0">
+                                <?= htmlspecialchars(strtok($_o, '.')) ?>
+                            </span>
+                            <?= htmlspecialchars(trim(substr($_o, strpos($_o, '.') + 1))) ?>
+                        </h3>
+                        <?php else: $_n++; ?>
+                        <div class="flex items-start gap-3 p-3 rounded-xl border border-gray-100 mb-2">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-black flex items-center justify-center flex-shrink-0">
+                                <?= $_n ?>
+                            </span>
+                            <span class="flex-1 text-sm text-gray-700 leading-snug pt-1.5"><?= htmlspecialchars($_o) ?></span>
+                        </div>
+                        <?php endif; ?>
                     <?php endforeach; ?>
-                </ul>
+                </div>
                 <?php endif; ?>
 
                 <?php if (!empty($lessons)): ?>
