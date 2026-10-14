@@ -127,7 +127,12 @@ $readingMinutes = max(1, (int) ceil($wordCount / 200));
                 <div class="flex-1">
                     <p class="font-black text-navy text-sm mb-0.5"><?= __('lessons.show.downloadable_material') ?></p>
                     <p class="text-xs text-gray-500 mb-3"><?= __('lessons.show.downloadable_material_help') ?></p>
-                    <a href="<?= htmlspecialchars($lesson['file_path']) ?>" download
+                    <?php /*
+                        cms_asset y no la ruta tal cual: el archivo vive en el
+                        CMS, que es otro sitio. Una ruta relativa se resolvía
+                        contra el dominio del portal y daba 404 al estudiante.
+                    */ ?>
+                    <a href="<?= htmlspecialchars(cms_asset($lesson['file_path'])) ?>" download
                        class="inline-flex items-center gap-2 text-sm font-bold bg-blue-500 text-white px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/25 hover:-translate-y-0.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                         <?= __('lessons.show.download_file') ?>

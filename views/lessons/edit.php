@@ -74,7 +74,7 @@
                 <div class="mb-3 flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200">
                     <svg class="w-4 h-4 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                     <span class="font-semibold truncate"><?= __('lessons.edit.current_file_label') ?></span>
-                    <a href="<?= htmlspecialchars($lesson['file_path']) ?>" target="_blank" class="text-brand-500 hover:underline truncate"><?= basename($lesson['file_path']) ?></a>
+                    <a href="<?= htmlspecialchars(cms_asset($lesson['file_path'])) ?>" target="_blank" class="text-brand-500 hover:underline truncate"><?= htmlspecialchars(basename($lesson['file_path'])) ?></a>
                 </div>
                 <?php endif; ?>
                 <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-300 transition-colors">
