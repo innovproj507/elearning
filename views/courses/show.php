@@ -260,6 +260,18 @@ $_csrfToken   = \App\Core\CSRF::generate();
                     <?php endif; ?>
                 </h2>
 
+                <?php
+                // Texto introductorio del temario (la justificación, en los
+                // cursos de evaluación de competencia). Va dentro del
+                // contenido y encima de las funciones, no en la descripción.
+                $_intro = trim((string) ($course['content_intro'] ?? ''));
+                ?>
+                <?php if ($_intro !== ''): ?>
+                <p class="text-sm text-gray-600 leading-relaxed mb-5 pb-5 border-b border-gray-100">
+                    <?= nl2br(htmlspecialchars($_intro)) ?>
+                </p>
+                <?php endif; ?>
+
                 <?php if ($_objetivos): ?>
                 <?php /*
                     Las entradas que empiezan por "F" son el nombre de una
