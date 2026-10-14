@@ -227,32 +227,6 @@ $_csrfToken   = \App\Core\CSRF::generate();
                     <?= nl2br(htmlspecialchars($course['description'] ?? '')) ?>
                 </div>
 
-                <?php
-                // Competencias del curso. Se guardan como JSON en
-                // learning_objectives; hasta ahora ninguna vista las
-                // mostraba, así que el dato entraba y no se veía.
-                $_objetivos = json_decode((string) ($course['learning_objectives'] ?? ''), true);
-                $_objetivos = is_array($_objetivos)
-                    ? array_values(array_filter(array_map('strval', $_objetivos), fn($o) => trim($o) !== ''))
-                    : [];
-                ?>
-                <?php if ($_objetivos): ?>
-                <div class="mt-6 pt-5 border-t border-gray-100">
-                    <h3 class="font-black text-navy text-sm mb-3 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 text-xs">✓</span>
-                        <?= __('courses.show.objectives_title') ?>
-                    </h3>
-                    <ul class="grid sm:grid-cols-2 gap-x-5 gap-y-2">
-                        <?php foreach ($_objetivos as $_o): ?>
-                        <li class="flex items-start gap-2 text-sm text-gray-600">
-                            <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <span><?= htmlspecialchars($_o) ?></span>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-                <?php endif; ?>
-
                 <!-- Stats visuales -->
                 <div class="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-gray-100">
                     <div class="text-center p-3 bg-blue-50 rounded-xl">
@@ -266,13 +240,40 @@ $_csrfToken   = \App\Core\CSRF::generate();
                 </div>
             </div>
 
-            <!-- Lecciones -->
-            <?php if (!empty($lessons)): ?>
+            <?php
+            // Competencias del curso, guardadas como JSON en
+            // learning_objectives. Ninguna vista las leía: el dato entraba
+            // en la base y no se veía en ninguna parte.
+            $_objetivos = json_decode((string) ($course['learning_objectives'] ?? ''), true);
+            $_objetivos = is_array($_objetivos)
+                ? array_values(array_filter(array_map('strval', $_objetivos), fn($o) => trim($o) !== ''))
+                : [];
+            ?>
+
+            <!-- Contenido del curso: competencias y lecciones -->
+            <?php if (!empty($lessons) || $_objetivos): ?>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h2 class="font-black text-navy text-lg mb-5">
                     <?= __('courses.show.course_content') ?>
+                    <?php if (!empty($lessons)): ?>
                     <span class="text-sm font-semibold text-gray-400 ml-2"><?= __('courses.show.lessons_count', ['count' => $lessonCount]) ?></span>
+                    <?php endif; ?>
                 </h2>
+
+                <?php if ($_objetivos): ?>
+                <ul class="space-y-2 <?= !empty($lessons) ? 'mb-5 pb-5 border-b border-gray-100' : '' ?>">
+                    <?php foreach ($_objetivos as $_i => $_o): ?>
+                    <li class="flex items-start gap-3 p-3 rounded-xl border border-gray-100">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-black flex items-center justify-center flex-shrink-0">
+                            <?= $_i + 1 ?>
+                        </span>
+                        <span class="flex-1 text-sm text-gray-700 leading-snug pt-1.5"><?= htmlspecialchars($_o) ?></span>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
+
+                <?php if (!empty($lessons)): ?>
                 <ul class="space-y-2">
                     <?php
                     $prevCompleted = true;
@@ -343,9 +344,10 @@ $_csrfToken   = \App\Core\CSRF::generate();
                     </li>
                     <?php endforeach; ?>
                 </ul>
+                <?php endif; ?>
 
                 <!-- Paneles de edición inline por lección -->
-                <?php if ($isManager): ?>
+                <?php if ($isManager && !empty($lessons)): ?>
                 <?php foreach ($lessons as $lesson): ?>
                 <div id="lesson-edit-panel-<?= $lesson['id'] ?>" class="hidden mt-3 p-5 rounded-xl border-2 border-brand-200 bg-brand-50/30">
                     <div class="flex items-center justify-between mb-4">
