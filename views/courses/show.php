@@ -227,6 +227,32 @@ $_csrfToken   = \App\Core\CSRF::generate();
                     <?= nl2br(htmlspecialchars($course['description'] ?? '')) ?>
                 </div>
 
+                <?php
+                // Competencias del curso. Se guardan como JSON en
+                // learning_objectives; hasta ahora ninguna vista las
+                // mostraba, así que el dato entraba y no se veía.
+                $_objetivos = json_decode((string) ($course['learning_objectives'] ?? ''), true);
+                $_objetivos = is_array($_objetivos)
+                    ? array_values(array_filter(array_map('strval', $_objetivos), fn($o) => trim($o) !== ''))
+                    : [];
+                ?>
+                <?php if ($_objetivos): ?>
+                <div class="mt-6 pt-5 border-t border-gray-100">
+                    <h3 class="font-black text-navy text-sm mb-3 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 text-xs">✓</span>
+                        <?= __('courses.show.objectives_title') ?>
+                    </h3>
+                    <ul class="grid sm:grid-cols-2 gap-x-5 gap-y-2">
+                        <?php foreach ($_objetivos as $_o): ?>
+                        <li class="flex items-start gap-2 text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span><?= htmlspecialchars($_o) ?></span>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+
                 <!-- Stats visuales -->
                 <div class="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-gray-100">
                     <div class="text-center p-3 bg-blue-50 rounded-xl">

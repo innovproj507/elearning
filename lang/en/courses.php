@@ -69,6 +69,7 @@ return [
         'satisfaction_enable_short_label'  => 'Enable satisfaction survey at completion',
         'image_formats_short'              => 'JPG, PNG or WebP',
         'about_course'                     => 'About the Course',
+        'objectives_title'                 => 'Course competences',
         'lessons_label'                    => 'Lessons',
         'quizzes_label'                    => 'Quizzes',
         'course_content'                   => 'Course Content',

@@ -69,6 +69,7 @@ return [
         'satisfaction_enable_short_label'  => 'Habilitar formulario de satisfacción al finalizar',
         'image_formats_short'              => 'JPG, PNG o WebP',
         'about_course'                     => 'Acerca del Curso',
+        'objectives_title'                 => 'Competencias del curso',
         'lessons_label'                    => 'Lecciones',
         'quizzes_label'                    => 'Quizzes',
         'course_content'                   => 'Contenido del Curso',
