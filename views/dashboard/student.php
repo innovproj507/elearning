@@ -172,7 +172,14 @@ $saludo = $_h < 12
                            class="font-black text-navy text-sm leading-snug hover:text-brand-500 transition-colors line-clamp-2 group-hover:text-brand-500 block mb-1">
                             <?= htmlspecialchars($e['title']) ?>
                         </a>
-                        <p class="text-xs text-gray-400 mb-3"><?= __('dashboard.student.by_teacher', ['name' => htmlspecialchars($e['teacher_name'])]) ?></p>
+                        <?php /*
+                            Sin instructor asignado la línea queda en blanco en
+                            vez de un «Por» suelto, y se conserva para que todas
+                            las tarjetas midan lo mismo.
+                        */ ?>
+                        <p class="text-xs text-gray-400 mb-3"><?= !empty($e['teacher_name'])
+                            ? __('dashboard.student.by_teacher', ['name' => htmlspecialchars($e['teacher_name'])])
+                            : '&nbsp;' ?></p>
 
                         <div class="flex items-center gap-2 mb-1">
                             <div class="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
