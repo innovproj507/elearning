@@ -154,6 +154,8 @@ class QuizController extends Controller
 
         $bestAttempt = $this->quizModel->getBestAttempt((int) $user['id'], (int) $quiz['id']);
 
+        $quiz['questions'] = $this->sortearPreguntas($quiz, (int) $user['id']);
+
         $this->view('quizzes.show', [
             'title'       => $quiz['title'],
             'layout'      => 'main',
@@ -161,6 +163,49 @@ class QuizController extends Controller
             'quiz'        => $quiz,
             'bestAttempt' => $bestAttempt,
         ]);
+    }
+
+    /**
+     * Devuelve las preguntas que se le presentan al estudiante.
+     *
+     * Si el quiz tiene questions_per_attempt, se sortea ese número de
+     * entre todas las del banco. El sorteo se guarda en la sesión: al
+     * recargar la página salen las mismas, de modo que nadie pueda
+     * recargar hasta que le toquen las fáciles. Se descarta al enviar.
+     *
+     * @return array Preguntas a mostrar, en orden aleatorio.
+     */
+    private function sortearPreguntas(array $quiz, int $userId): array
+    {
+        $todas  = $quiz['questions'] ?? [];
+        $cuanto = (int) ($quiz['questions_per_attempt'] ?? 0);
+
+        if ($cuanto <= 0 || $cuanto >= count($todas)) {
+            return $todas;
+        }
+
+        $clave = 'quiz_sorteo_' . (int) $quiz['id'] . '_' . $userId;
+        $porId = [];
+        foreach ($todas as $p) {
+            $porId[(int) $p['id']] = $p;
+        }
+
+        // ¿Hay un sorteo vigente y siguen existiendo esas preguntas?
+        $guardado = $_SESSION[$clave] ?? null;
+        if (is_array($guardado)) {
+            $vigentes = array_values(array_filter($guardado, fn($id) => isset($porId[$id])));
+            if (count($vigentes) === $cuanto) {
+                return array_map(fn($id) => $porId[$id], $vigentes);
+            }
+        }
+
+        $ids = array_keys($porId);
+        shuffle($ids);
+        $ids = array_slice($ids, 0, $cuanto);
+
+        $_SESSION[$clave] = $ids;
+
+        return array_map(fn($id) => $porId[$id], $ids);
     }
 
     // ─── Enviar respuestas ────────────────────────────────────────
@@ -179,7 +224,15 @@ class QuizController extends Controller
         // Respuestas: answers[question_id] = option_id
         $answers = array_map('intval', $_POST['answers'] ?? []);
 
-        $result = $this->quizModel->gradeAttempt((int) $attemptId, $quizId, $answers);
+        // Preguntas que se le presentaron. Manda el sorteo guardado en la
+        // sesión, no lo que llegue del formulario: así nadie puede acortar
+        // su propio examen. El formulario sólo sirve de respaldo si la
+        // sesión se perdió. El CMS las valida de nuevo contra el quiz.
+        $clave  = 'quiz_sorteo_' . $quizId . '_' . (int) $user['id'];
+        $asked  = $_SESSION[$clave] ?? array_map('intval', $_POST['asked'] ?? []);
+        unset($_SESSION[$clave]);
+
+        $result = $this->quizModel->gradeAttempt((int) $attemptId, $quizId, $answers, $asked);
 
         // Si es quiz de lección y el estudiante aprobó → marcar lección como completada
         if ($result['passed']) {

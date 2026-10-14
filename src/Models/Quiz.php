@@ -64,9 +64,18 @@ class Quiz extends Model
     /**
      * Grades an attempt and returns the score result.
      */
-    public function gradeAttempt(int $attemptId, int $quizId, array $answers): array|false
+    /**
+     * @param int[] $asked Preguntas presentadas, cuando el quiz sortea un
+     *   subconjunto del banco. Vacío = se preguntaron todas.
+     */
+    public function gradeAttempt(int $attemptId, int $quizId, array $answers, array $asked = []): array|false
     {
-        $response = $this->api->post("/quizzes/{$quizId}/attempts/{$attemptId}/grade", ['answers' => $answers]);
+        $cuerpo = ['answers' => $answers];
+        if ($asked) {
+            $cuerpo['asked'] = array_values(array_map('intval', $asked));
+        }
+
+        $response = $this->api->post("/quizzes/{$quizId}/attempts/{$attemptId}/grade", $cuerpo);
         if ($response && isset($response['status']) && $response['status'] === 'success') {
             return $response['data'];
         }
