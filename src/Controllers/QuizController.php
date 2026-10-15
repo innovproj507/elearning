@@ -154,7 +154,11 @@ class QuizController extends Controller
 
         $bestAttempt = $this->quizModel->getBestAttempt((int) $user['id'], (int) $quiz['id']);
 
-        $quiz['questions'] = $this->sortearPreguntas($quiz, (int) $user['id']);
+        // Aprobado es aprobado: no se repite para subir nota. El examen
+        // queda cerrado y sólo se muestra el resultado obtenido.
+        $yaAprobado = !$isManager && $bestAttempt && !empty($bestAttempt['passed']);
+
+        $quiz['questions'] = $yaAprobado ? [] : $this->sortearPreguntas($quiz, (int) $user['id']);
 
         $this->view('quizzes.show', [
             'title'       => $quiz['title'],
@@ -162,6 +166,7 @@ class QuizController extends Controller
             'course'      => $course,
             'quiz'        => $quiz,
             'bestAttempt' => $bestAttempt,
+            'yaAprobado'  => $yaAprobado,
         ]);
     }
 
@@ -217,6 +222,15 @@ class QuizController extends Controller
         $user   = $this->authUser();
         $course = $this->courseModel->findOrFail((int) ($params['courseId'] ?? 0));
         $quizId = (int) ($params['id'] ?? 0);
+
+        // Si ya lo aprobó, no se admite otro intento. Se comprueba aquí y
+        // no sólo al pintar la pantalla: sin esto bastaría con enviar el
+        // formulario a mano para repetir un examen ya aprobado.
+        $mejor = $this->quizModel->getBestAttempt((int) $user['id'], $quizId);
+        if ($mejor && !empty($mejor['passed'])) {
+            $this->flashError('Ya aprobaste esta evaluación; no admite nuevos intentos.');
+            $this->redirect("/cursos/{$course['id']}/quizzes/{$quizId}/resultados?attempt=" . (int) $mejor['id']);
+        }
 
         // Iniciar intento
         $attemptId = $this->quizModel->startAttempt((int) $user['id'], $quizId);

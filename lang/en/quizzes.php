@@ -2,6 +2,9 @@
 
 return [
     'show' => [
+        'see_results' => 'See my result',
+        'locked_help' => 'You already passed this evaluation, so no further attempts are allowed. You can review your result at any time.',
+        'locked_title' => 'Evaluation passed',
         'exit'              => 'Exit',
         'pass_label'        => 'Passing score: :pct%',
         'questions_count'   => ':count questions',

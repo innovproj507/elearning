@@ -81,6 +81,29 @@ $timeLimit = (int)($quiz['time_limit'] ?? 0);
         </div>
     </div>
 
+    <?php /*
+        Examen ya aprobado: no se vuelve a presentar. En lugar del
+        formulario se ofrece el resultado obtenido, que es lo único que
+        tiene sentido consultar a estas alturas.
+    */ ?>
+    <?php if (!empty($yaAprobado)): ?>
+    <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-8 text-center">
+        <p class="text-4xl mb-3">🏆</p>
+        <h2 class="font-black text-navy text-lg mb-1"><?= __('quizzes.show.locked_title') ?></h2>
+        <p class="text-sm text-gray-600 mb-5"><?= __('quizzes.show.locked_help') ?></p>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+            <a href="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>/resultados?attempt=<?= (int) $bestAttempt['id'] ?>"
+               class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-brand-500/25">
+                <?= __('quizzes.show.see_results') ?>
+            </a>
+            <a href="/cursos/<?= htmlspecialchars($course['slug'] ?? (string) $course['id']) ?>"
+               class="inline-flex items-center gap-2 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-600 font-bold px-6 py-3 rounded-xl text-sm transition-all">
+                <?= __('quizzes.show.back_to_course') ?>
+            </a>
+        </div>
+    </div>
+    <?php else: ?>
+
     <!-- Formulario -->
     <form method="POST" action="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>/responder" id="quiz-form">
         <?= \App\Core\CSRF::field() ?>
@@ -142,8 +165,10 @@ $timeLimit = (int)($quiz['time_limit'] ?? 0);
             </button>
         </div>
     </form>
+    <?php endif; ?>
 </div>
 
+<?php if (empty($yaAprobado)): /* el script maneja el formulario; sin él sobra */ ?>
 <script>
 const totalQ = <?= $total ?>;
 
@@ -187,3 +212,4 @@ document.getElementById('quiz-form').addEventListener('submit', function(e) {
     }
 });
 </script>
+<?php endif; ?>

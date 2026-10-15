@@ -2,6 +2,9 @@
 
 return [
     'show' => [
+        'see_results' => 'Ver mi resultado',
+        'locked_help' => 'Ya aprobaste esta evaluación, así que no admite nuevos intentos. Puedes consultar tu resultado cuando quieras.',
+        'locked_title' => 'Evaluación aprobada',
         'exit'              => 'Salir',
         'pass_label'        => 'Aprobación: :pct%',
         'questions_count'   => ':count preguntas',
