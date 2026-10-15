@@ -102,11 +102,25 @@ $wrong    = $total - $correct;
 
             <!-- Acciones -->
             <div class="flex flex-col sm:flex-row gap-3">
+                <?php /*
+                    Aprobado no se repite: en su lugar se ofrece el acta.
+                    El enlace lo firma el CMS, que es quien genera el Word.
+                */ ?>
+                <?php if (!$passed): ?>
                 <a href="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>"
                    class="flex-1 inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-brand-500/25 hover:-translate-y-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     <?= __('quizzes.results.try_again') ?>
                 </a>
+                <?php endif; ?>
+
+                <?php if (!empty($attempt['acta_url'])): ?>
+                <a href="<?= htmlspecialchars($attempt['acta_url']) ?>"
+                   class="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/25 hover:-translate-y-0.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <?= __('quizzes.results.download_record') ?>
+                </a>
+                <?php endif; ?>
                 <a href="/cursos/<?= htmlspecialchars($course['slug']) ?>"
                    class="flex-1 inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-3.5 rounded-xl text-sm transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>

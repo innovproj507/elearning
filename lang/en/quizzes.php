@@ -80,6 +80,7 @@ return [
         'remove'              => 'Remove',
     ],
     'results' => [
+        'download_record' => 'Download my record',
         'congrats_passed'     => 'Congratulations, you passed!',
         'keep_practicing'     => 'Keep practicing!',
         'score_label'         => 'score',

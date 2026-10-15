@@ -80,6 +80,7 @@ return [
         'remove'              => 'Eliminar',
     ],
     'results' => [
+        'download_record' => 'Descargar mi acta',
         'congrats_passed'     => '¡Felicidades, aprobaste!',
         'keep_practicing'     => '¡Sigue practicando!',
         'score_label'         => 'puntaje',
