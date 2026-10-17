@@ -49,6 +49,32 @@ class Quiz extends Model
     }
 
     /**
+     * Intentos gastados, los que quedan y si el examen está cerrado.
+     *
+     * Quien decide es el CMS; esto sólo sirve para enseñárselo al
+     * estudiante. Si la API no contesta se devuelve un estado abierto:
+     * cortar el acceso por un fallo de red sería peor, y el intento se
+     * rechaza igualmente al enviarlo.
+     */
+    public function estadoIntentos(int $quizId): array
+    {
+        $abierto = [
+            'realizados' => 0, 'limite' => 0, 'restantes' => null,
+            'aprobado' => false, 'bloqueado' => false, 'motivo' => null, 'mensaje' => null,
+        ];
+
+        // Sin caché a propósito: con la respuesta guardada 30 segundos, un
+        // estudiante que acabara de gastar su último intento vería otra vez
+        // el formulario al recargar.
+        $response = $this->api->get("/quizzes/{$quizId}/attempts/state", [], true);
+        if ($response && ($response['status'] ?? '') === 'success' && is_array($response['data'] ?? null)) {
+            return $response['data'] + $abierto;
+        }
+
+        return $abierto;
+    }
+
+    /**
      * Starts a new quiz attempt. Returns the attempt ID.
      * Auth is derived from Bearer token server-side.
      */

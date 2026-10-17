@@ -81,21 +81,35 @@ $timeLimit = (int)($quiz['time_limit'] ?? 0);
         </div>
     </div>
 
-    <?php /*
-        Examen ya aprobado: no se vuelve a presentar. En lugar del
+    <?php
+    /*
+        Examen cerrado, por dos motivos distintos: ya está aprobado —no se
+        repite para subir nota— o se agotaron los intentos. En lugar del
         formulario se ofrece el resultado obtenido, que es lo único que
         tiene sentido consultar a estas alturas.
-    */ ?>
-    <?php if (!empty($yaAprobado)): ?>
-    <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-8 text-center">
-        <p class="text-4xl mb-3">🏆</p>
-        <h2 class="font-black text-navy text-lg mb-1"><?= __('quizzes.show.locked_title') ?></h2>
-        <p class="text-sm text-gray-600 mb-5"><?= __('quizzes.show.locked_help') ?></p>
+    */
+    $cerrado   = $cerrado   ?? !empty($yaAprobado);
+    $intentos  = $intentos  ?? [];
+    $sinIntentos = ($intentos['motivo'] ?? null) === 'sin_intentos';
+    ?>
+    <?php if ($cerrado): ?>
+    <div class="<?= $sinIntentos ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200' ?> border-2 rounded-2xl p-8 text-center">
+        <p class="text-4xl mb-3"><?= $sinIntentos ? '🔒' : '🏆' ?></p>
+        <h2 class="font-black text-navy text-lg mb-1">
+            <?= $sinIntentos ? __('quizzes.show.no_attempts_title') : __('quizzes.show.locked_title') ?>
+        </h2>
+        <p class="text-sm text-gray-600 mb-5">
+            <?= $sinIntentos
+                ? __('quizzes.show.no_attempts_help', ['total' => (int) ($intentos['limite'] ?? 0)])
+                : __('quizzes.show.locked_help') ?>
+        </p>
         <div class="flex flex-wrap items-center justify-center gap-3">
+            <?php if ($bestAttempt): /* sin intento no hay resultado que enseñar */ ?>
             <a href="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>/resultados?attempt=<?= (int) $bestAttempt['id'] ?>"
                class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-brand-500/25">
                 <?= __('quizzes.show.see_results') ?>
             </a>
+            <?php endif; ?>
             <a href="/cursos/<?= htmlspecialchars($course['slug'] ?? (string) $course['id']) ?>"
                class="inline-flex items-center gap-2 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-600 font-bold px-6 py-3 rounded-xl text-sm transition-all">
                 <?= __('quizzes.show.back_to_course') ?>
@@ -103,6 +117,19 @@ $timeLimit = (int)($quiz['time_limit'] ?? 0);
         </div>
     </div>
     <?php else: ?>
+
+    <?php /* Qué intento está presentando, para que no le pille por sorpresa */ ?>
+    <?php if (!empty($intentos['limite'])): ?>
+    <?php $nEste = (int) $intentos['realizados'] + 1; $tope = (int) $intentos['limite']; ?>
+    <div class="mb-5 flex items-center justify-center gap-2 text-sm font-bold
+                <?= $nEste >= $tope ? 'text-rose-600' : 'text-gray-500' ?>">
+        <span><?= $nEste >= $tope ? '⚠️' : '📝' ?></span>
+        <span><?= __('quizzes.show.attempt_of', ['n' => $nEste, 'total' => $tope]) ?></span>
+        <?php if ($nEste >= $tope): ?>
+        <span class="font-black"><?= __('quizzes.show.last_attempt') ?></span>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 
     <!-- Formulario -->
     <form method="POST" action="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>/responder" id="quiz-form">
@@ -168,7 +195,7 @@ $timeLimit = (int)($quiz['time_limit'] ?? 0);
     <?php endif; ?>
 </div>
 
-<?php if (empty($yaAprobado)): /* el script maneja el formulario; sin él sobra */ ?>
+<?php if (!$cerrado): /* el script maneja el formulario; sin él sobra */ ?>
 <script>
 const totalQ = <?= $total ?>;
 

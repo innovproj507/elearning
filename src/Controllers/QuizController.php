@@ -154,11 +154,17 @@ class QuizController extends Controller
 
         $bestAttempt = $this->quizModel->getBestAttempt((int) $user['id'], (int) $quiz['id']);
 
-        // Aprobado es aprobado: no se repite para subir nota. El examen
-        // queda cerrado y sólo se muestra el resultado obtenido.
-        $yaAprobado = !$isManager && $bestAttempt && !empty($bestAttempt['passed']);
+        // Estado de los intentos según el CMS: aprobado es aprobado y no se
+        // repite para subir nota, y además hay un tope de intentos. Las dos
+        // cosas cierran el examen; aquí sólo se refleja lo que dice la API.
+        $intentos   = $isManager
+            ? ['bloqueado' => false, 'restantes' => null, 'realizados' => 0, 'limite' => 0,
+               'aprobado' => false, 'motivo' => null, 'mensaje' => null]
+            : $this->quizModel->estadoIntentos((int) $quiz['id']);
+        $yaAprobado = !empty($intentos['aprobado']);
+        $cerrado    = !empty($intentos['bloqueado']);
 
-        $quiz['questions'] = $yaAprobado ? [] : $this->sortearPreguntas($quiz, (int) $user['id']);
+        $quiz['questions'] = $cerrado ? [] : $this->sortearPreguntas($quiz, (int) $user['id']);
 
         $this->view('quizzes.show', [
             'title'       => $quiz['title'],
@@ -167,6 +173,8 @@ class QuizController extends Controller
             'quiz'        => $quiz,
             'bestAttempt' => $bestAttempt,
             'yaAprobado'  => $yaAprobado,
+            'cerrado'     => $cerrado,
+            'intentos'    => $intentos,
         ]);
     }
 
@@ -223,17 +231,29 @@ class QuizController extends Controller
         $course = $this->courseModel->findOrFail((int) ($params['courseId'] ?? 0));
         $quizId = (int) ($params['id'] ?? 0);
 
-        // Si ya lo aprobó, no se admite otro intento. Se comprueba aquí y
-        // no sólo al pintar la pantalla: sin esto bastaría con enviar el
-        // formulario a mano para repetir un examen ya aprobado.
-        $mejor = $this->quizModel->getBestAttempt((int) $user['id'], $quizId);
-        if ($mejor && !empty($mejor['passed'])) {
-            $this->flashError('Ya aprobaste esta evaluación; no admite nuevos intentos.');
-            $this->redirect("/cursos/{$course['id']}/quizzes/{$quizId}/resultados?attempt=" . (int) $mejor['id']);
+        // Examen cerrado —aprobado o sin intentos— no admite otro envío. Se
+        // comprueba aquí y no sólo al pintar la pantalla: sin esto bastaría
+        // con enviar el formulario a mano. El CMS lo rechaza igualmente al
+        // iniciar el intento; esto es para dar un mensaje decente.
+        $intentos = $this->quizModel->estadoIntentos($quizId);
+        if (!empty($intentos['bloqueado'])) {
+            $mejor = $this->quizModel->getBestAttempt((int) $user['id'], $quizId);
+            $this->flashError($intentos['mensaje'] ?: 'Esta evaluación ya no admite nuevos intentos.');
+            $this->redirect($mejor
+                ? "/cursos/{$course['id']}/quizzes/{$quizId}/resultados?attempt=" . (int) $mejor['id']
+                : "/cursos/{$course['slug']}");
         }
 
         // Iniciar intento
         $attemptId = $this->quizModel->startAttempt((int) $user['id'], $quizId);
+
+        // El CMS tiene la última palabra: si rechazó el intento (tope
+        // agotado en una pestaña abierta hace rato), no hay nada que
+        // calificar y no debe crearse una nota de la nada.
+        if (!$attemptId) {
+            $this->flashError('Esta evaluación ya no admite nuevos intentos.');
+            $this->redirect("/cursos/{$course['id']}/quizzes/{$quizId}");
+        }
 
         // Respuestas: answers[question_id] = option_id
         $answers = array_map('intval', $_POST['answers'] ?? []);

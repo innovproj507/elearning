@@ -81,7 +81,13 @@ class ApiClient
 
     // ─── Métodos públicos ─────────────────────────────────────────
 
-    public function get(string $endpoint, array $params = []): array|false
+    /**
+     * @param bool $sinCache Para datos donde una respuesta de hace 30
+     *   segundos es peor que ninguna: por ejemplo cuántos intentos de un
+     *   examen le quedan al estudiante, donde servir el valor viejo le
+     *   enseñaría el formulario de un intento que ya no tiene.
+     */
+    public function get(string $endpoint, array $params = [], bool $sinCache = false): array|false
     {
         if (!empty($params)) {
             $endpoint .= '?' . http_build_query($params);
@@ -89,14 +95,16 @@ class ApiClient
 
         $cacheKey = 'apicache_' . md5($this->baseUrl . $endpoint . ($this->token ?? ''));
 
-        $cached = $this->cacheGet($cacheKey);
-        if ($cached !== null) {
-            return $cached;
+        if (!$sinCache) {
+            $cached = $this->cacheGet($cacheKey);
+            if ($cached !== null) {
+                return $cached;
+            }
         }
 
         $result = $this->request('GET', $endpoint);
 
-        if ($result !== false) {
+        if ($result !== false && !$sinCache) {
             $this->cacheSet($cacheKey, $result);
         }
 
