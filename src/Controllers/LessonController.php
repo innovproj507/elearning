@@ -75,9 +75,18 @@ class LessonController extends Controller
         $course   = $courseId > 0
             ? $this->courseModel->findOrFail($courseId)
             : ($this->courseModel->findBySlug($rawId) ?: $this->courseModel->findOrFail(0));
-        $lesson = $this->lessonModel->findOrFail((int) ($params['id'] ?? 0));
 
         $isManager = in_array($user['role'], ['teacher', 'admin'], true);
+
+        // Verificar inscripción ANTES de pedir la lección: el API ya no entrega
+        // lecciones a quien no está inscrito (respondería 403 y saldría un 404).
+        if (!$isManager
+            && !$this->enrollmentModel->isEnrolled((int) $user['id'], (int) $course['id'])) {
+            $this->flashError('Debes inscribirte para acceder al contenido.');
+            $this->redirect('/cursos/' . $course['slug']);
+        }
+
+        $lesson = $this->lessonModel->findOrFail((int) ($params['id'] ?? 0));
 
         // Bloquear lección desactivada (sólo managers pueden verla)
         if (!$lesson['is_active'] && !$isManager) {
@@ -85,13 +94,7 @@ class LessonController extends Controller
             $this->redirect('/cursos/' . $course['slug']);
         }
 
-        // Verificar inscripción
         if (!$isManager) {
-            if (!$this->enrollmentModel->isEnrolled((int) $user['id'], (int) $course['id'])) {
-                $this->flashError('Debes inscribirte para acceder al contenido.');
-                $this->redirect('/cursos/' . $course['slug']);
-            }
-
             // Enforcement secuencial: verificar que la lección anterior esté completada
             $prev = $this->lessonModel->previousInCourse((int) $course['id'], (int) $lesson['order_num']);
             if ($prev && !$this->lessonModel->isCompleted((int) $user['id'], (int) $prev['id'])) {
