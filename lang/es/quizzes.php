@@ -2,6 +2,7 @@
 
 return [
     'show' => [
+        'back_to_course' => 'Volver al curso',
         'see_results' => 'Ver mi resultado',
         'locked_help' => 'Ya aprobaste esta evaluación, así que no admite nuevos intentos. Puedes consultar tu resultado cuando quieras.',
         'locked_title' => 'Evaluación aprobada',
