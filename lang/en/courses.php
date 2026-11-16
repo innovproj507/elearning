@@ -75,6 +75,8 @@ return [
         'course_content'                   => 'Course Content',
         'lesson_inactive'                  => 'Inactive',
         'lesson_locked'                    => 'Locked',
+        'quiz_locked'                      => 'Complete the previous modules to unlock this quiz',
+        'quiz_empty'                       => 'No questions yet: students do not see it',
         'minutes_abbr'                     => 'min',
         'deactivate'                       => 'Deactivate',
         'activate'                         => 'Activate',

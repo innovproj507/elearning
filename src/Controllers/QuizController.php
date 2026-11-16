@@ -136,11 +136,20 @@ class QuizController extends Controller
                     }
                 }
             } else {
-                // Quiz de curso: todas las lecciones activas deben estar completadas
-                $activeLessons = array_values(array_filter(
+                // Quiz de curso: los módulos que lo preceden deben estar completados.
+                // Los quizzes intermedios van tras cada tres módulos (3, 6, 9…) y
+                // el examen final tras todos; ver App\Core\CourseSequence.
+                $contenido     = $this->courseModel->getLessonsAndQuizzes((int) $course['id']);
+                $todasActivas  = array_values(array_filter(
                     $lessonModel->byCourse((int) $course['id']),
                     fn($l) => !empty($l['is_active'])
                 ));
+                $requisito     = \App\Core\CourseSequence::requisitoDe(
+                    (int) $quiz['id'], $contenido['lessons'] ?? [], $contenido['quizzes'] ?? []
+                );
+                $activeLessons = $requisito === null
+                    ? $todasActivas
+                    : array_slice($todasActivas, 0, $requisito);
                 $completedIds = $lessonModel->completedByStudentInCourse((int) $user['id'], (int) $course['id']);
 
                 $pending = array_filter($activeLessons, fn($l) => !\in_array((int) $l['id'], array_map('intval', $completedIds)));
@@ -163,6 +172,13 @@ class QuizController extends Controller
             : $this->quizModel->estadoIntentos((int) $quiz['id']);
         $yaAprobado = !empty($intentos['aprobado']);
         $cerrado    = !empty($intentos['bloqueado']);
+
+        // Un examen sin preguntas no se puede presentar: se enviaría vacío,
+        // saldría con 0 y gastaría uno de los intentos del alumno.
+        if (!$isManager && !$cerrado && empty($quiz['questions'])) {
+            $this->flashError('Este examen aún no tiene preguntas. Avisa a tu instructor.');
+            $this->redirect('/cursos/' . $course['slug']);
+        }
 
         $quiz['questions'] = $cerrado ? [] : $this->sortearPreguntas($quiz, (int) $user['id']);
 
@@ -242,6 +258,13 @@ class QuizController extends Controller
             $this->redirect($mejor
                 ? "/cursos/{$course['id']}/quizzes/{$quizId}/resultados?attempt=" . (int) $mejor['id']
                 : "/cursos/{$course['slug']}");
+        }
+
+        // Sin preguntas no hay nada que calificar (y el CMS tampoco abre el intento).
+        $banco = $this->quizModel->withQuestionsAndOptions($quizId);
+        if (!$banco || empty($banco['questions'])) {
+            $this->flashError('Este examen aún no tiene preguntas. Avisa a tu instructor.');
+            $this->redirect("/cursos/{$course['slug']}");
         }
 
         // Iniciar intento

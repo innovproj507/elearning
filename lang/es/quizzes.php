@@ -86,6 +86,7 @@ return [
     ],
     'results' => [
         'download_record' => 'Descargar mi acta',
+        'download_exam' => 'Descargar mi examen (Word)',
         'congrats_passed'     => '¡Felicidades, aprobaste!',
         'keep_practicing'     => '¡Sigue practicando!',
         'score_label'         => 'puntaje',
@@ -98,6 +99,8 @@ return [
         'back_to_course'      => 'Volver al curso',
         'answer_review'       => 'Revisión de Respuestas',
         'correct_count'       => ':correct/:total correctas',
+        'no_detail_title'     => 'El detalle de respuestas no está disponible para este intento',
+        'no_detail_body'      => 'Este intento sólo conserva su nota y su resultado. El detalle por pregunta no se guardó (intento registrado antes de existir la revisión de respuestas, o el examen no tenía preguntas en ese momento).',
         'your_answer'         => 'Tu respuesta:',
         'no_answer'           => 'Sin respuesta',
         'correct_answer'      => 'Correcta:',

@@ -79,11 +79,17 @@ class CourseController extends Controller
             }
         }
 
+        // Un quiz tras cada tres módulos; el examen final y los sobrantes, al final.
+        $secuencia = \App\Core\CourseSequence::ordenar($content['lessons'], $content['quizzes'], $isManager);
+
         $this->view('courses.show', [
             'title'                => $course['title'],
             'course'               => $course,
             'lessons'              => $content['lessons'],
             'quizzes'              => $content['quizzes'],
+            'quizzesTrasLeccion'   => $secuencia['trasLeccion'],
+            'quizzesAlFinal'       => $secuencia['alFinal'],
+            'quizRequisitos'       => $secuencia['requisitos'],
             'quizzesWithQuestions' => $quizzesWithQuestions,
             'lessonQuizzes'        => $lessonQuizzes,
             'enrolled'             => $enrolled,

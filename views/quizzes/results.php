@@ -4,6 +4,10 @@ $score    = (float)$attempt['score'];
 $correct  = count(array_filter($attempt['answers'], fn($a) => $a['is_correct']));
 $total    = count($attempt['answers']);
 $wrong    = $total - $correct;
+// Intentos importados de la plataforma anterior (y los hechos cuando el examen aún
+// no tenía preguntas) guardan la nota pero no las respuestas: sin este caso
+// la pantalla decía "0 correctas, 0 incorrectas" junto a un 80 % aprobado.
+$sinDetalle = ($total === 0);
 ?>
 <style>
 .confetti-piece { position:fixed; width:10px; height:10px; top:-10px; animation:fall linear forwards; pointer-events:none; z-index:9999; border-radius:2px; }
@@ -58,6 +62,12 @@ $wrong    = $total - $correct;
 
                 <!-- Estadísticas -->
                 <div class="flex-1 w-full space-y-4">
+                    <?php if ($sinDetalle): ?>
+                    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                        <p class="text-sm font-black text-amber-800"><?= __('quizzes.results.no_detail_title') ?></p>
+                        <p class="text-xs text-amber-700 mt-1"><?= __('quizzes.results.no_detail_body') ?></p>
+                    </div>
+                    <?php else: ?>
                     <div class="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                         <span class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg flex-shrink-0">✓</span>
                         <div>
@@ -72,6 +82,7 @@ $wrong    = $total - $correct;
                             <p class="text-xs text-red-500 font-semibold"><?= __('quizzes.results.incorrect') ?></p>
                         </div>
                     </div>
+                    <?php endif; ?>
                     <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                         <span class="w-10 h-10 rounded-xl bg-gray-200 flex items-center justify-center text-gray-600 font-black text-sm flex-shrink-0"><?= __('quizzes.results.min_abbr') ?></span>
                         <div>
@@ -118,7 +129,7 @@ $wrong    = $total - $correct;
                 <a href="<?= htmlspecialchars($attempt['acta_url']) ?>"
                    class="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/25 hover:-translate-y-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    <?= __('quizzes.results.download_record') ?>
+                    <?= $sinDetalle ? __('quizzes.results.download_record') : __('quizzes.results.download_exam') ?>
                 </a>
                 <?php endif; ?>
                 <a href="/cursos/<?= htmlspecialchars($course['slug']) ?>"
@@ -131,6 +142,7 @@ $wrong    = $total - $correct;
     </div>
 
     <!-- Revisión de respuestas -->
+    <?php if (!$sinDetalle): ?>
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
             <span class="w-8 h-8 rounded-xl bg-navy flex items-center justify-center text-white text-sm">📋</span>
@@ -169,6 +181,7 @@ $wrong    = $total - $correct;
             <?php endforeach; ?>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <script>

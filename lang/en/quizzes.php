@@ -86,6 +86,7 @@ return [
     ],
     'results' => [
         'download_record' => 'Download my record',
+        'download_exam' => 'Download my exam (Word)',
         'congrats_passed'     => 'Congratulations, you passed!',
         'keep_practicing'     => 'Keep practicing!',
         'score_label'         => 'score',
@@ -98,6 +99,8 @@ return [
         'back_to_course'      => 'Back to course',
         'answer_review'       => 'Answer Review',
         'correct_count'       => ':correct/:total correct',
+        'no_detail_title'     => 'Detailed answers are not available for this attempt',
+        'no_detail_body'      => 'This attempt only keeps its score and result. The per-question detail was not saved (attempt recorded before the question review existed, or the exam had no questions at the time).',
         'your_answer'         => 'Your answer:',
         'no_answer'           => 'No answer',
         'correct_answer'      => 'Correct:',

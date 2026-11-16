@@ -75,6 +75,8 @@ return [
         'course_content'                   => 'Contenido del Curso',
         'lesson_inactive'                  => 'Inactiva',
         'lesson_locked'                    => 'Bloqueada',
+        'quiz_locked'                      => 'Completa los módulos anteriores para habilitar este quiz',
+        'quiz_empty'                       => 'Sin preguntas: el alumnado no lo ve',
         'minutes_abbr'                     => 'min',
         'deactivate'                       => 'Desactivar',
         'activate'                         => 'Activar',

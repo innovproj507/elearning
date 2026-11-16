@@ -300,6 +300,57 @@ $_csrfToken   = \App\Core\CSRF::generate();
                 <?php endif; ?>
 
                 <?php if (!empty($lessons)): ?>
+<?php
+// Un quiz suelto se pinta igual tras el tercer módulo que en "Evaluaciones".
+// $bloqueado: aún no ha completado los módulos que lo preceden.
+$renderQuiz = function (array $quiz, bool $bloqueado = false) use ($course, $enrolled, $isManager) {
+?>
+                    <li class="flex items-center gap-4 p-4 rounded-xl bg-amber-50 border border-amber-100">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xl shadow-md flex-shrink-0">📝</div>
+                        <div class="flex-1 min-w-0">
+                            <?php if (($enrolled || $isManager) && !$bloqueado): ?>
+                            <a href="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>"
+                               class="font-bold text-navy hover:text-brand-500 transition-colors text-sm">
+                                <?= htmlspecialchars($quiz['title']) ?>
+                            </a>
+                            <?php else: ?>
+                            <p class="font-bold text-navy text-sm"><?= htmlspecialchars($quiz['title']) ?></p>
+                            <?php endif; ?>
+                            <p class="text-xs text-amber-600 font-semibold mt-0.5"><?= __('courses.show.min_pass') ?>: <?= $quiz['pass_percentage'] ?>%</p>
+                            <?php if ($bloqueado): ?><p class="text-xs text-gray-400 font-semibold mt-0.5"><?= __('courses.show.quiz_locked') ?></p><?php endif; ?>
+                            <?php if ($isManager && (int) ($quiz['question_count'] ?? 1) === 0): ?><p class="text-xs text-red-500 font-bold mt-0.5"><?= __('courses.show.quiz_empty') ?></p><?php endif; ?>
+                        </div>
+                        <?php if ($isManager): ?>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="toggleQuizEditPanel(<?= $quiz['id'] ?>)"
+                               class="w-7 h-7 rounded-lg bg-white hover:bg-slate-100 flex items-center justify-center transition-colors border border-amber-200" title="<?= __('courses.show.edit_quiz') ?>">
+                                <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+                            <form method="POST" action="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>/eliminar"
+                                  onsubmit="return confirm('<?= addslashes(__('courses.show.confirm_delete_quiz')) ?>')" class="inline">
+                                <?= \App\Core\CSRF::field() ?>
+                                <button type="submit" class="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors border border-red-200" title="<?= __('courses.show.delete_quiz') ?>">
+                                    <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </form>
+                        </div>
+                        <?php elseif (!$enrolled): ?>
+                        <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <?php endif; ?>
+                    </li>
+<?php
+};
+// Módulos activos que hay que tener completados antes de este quiz.
+$quizBloqueado = function (array $quiz) use ($lessons, $quizRequisitos, $completedLessonIds, $enrolled, $isManager): bool {
+    if ($isManager || !$enrolled) { return false; }
+    $activas = array_values(array_filter($lessons, fn($l) => !empty($l['is_active'])));
+    $req     = (int) ($quizRequisitos[(int) $quiz['id']] ?? count($activas));
+    foreach (array_slice($activas, 0, $req) as $l) {
+        if (!\in_array((int) $l['id'], $completedLessonIds ?? [], true)) { return true; }
+    }
+    return false;
+};
+?>
                 <ul class="space-y-2">
                     <?php
                     $prevCompleted = true;
@@ -368,6 +419,7 @@ $_csrfToken   = \App\Core\CSRF::generate();
                         </div>
                         <?php endif; ?>
                     </li>
+                    <?php foreach (($quizzesTrasLeccion[(int) $lesson['id']] ?? []) as $qTras) { $renderQuiz($qTras, $quizBloqueado($qTras)); } ?>
                     <?php endforeach; ?>
                 </ul>
                 <?php endif; ?>
@@ -584,42 +636,11 @@ $_csrfToken   = \App\Core\CSRF::generate();
             <?php endif; ?>
 
             <!-- Evaluaciones -->
-            <?php if (!empty($quizzes)): ?>
+            <?php if (!empty($quizzesAlFinal)): ?>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h2 class="font-black text-navy text-lg mb-5"><?= __('courses.show.evaluations') ?></h2>
                 <ul class="space-y-3">
-                    <?php foreach ($quizzes as $quiz): ?>
-                    <li class="flex items-center gap-4 p-4 rounded-xl bg-amber-50 border border-amber-100">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xl shadow-md flex-shrink-0">📝</div>
-                        <div class="flex-1 min-w-0">
-                            <?php if ($enrolled || $isManager): ?>
-                            <a href="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>"
-                               class="font-bold text-navy hover:text-brand-500 transition-colors text-sm">
-                                <?= htmlspecialchars($quiz['title']) ?>
-                            </a>
-                            <?php else: ?>
-                            <p class="font-bold text-navy text-sm"><?= htmlspecialchars($quiz['title']) ?></p>
-                            <?php endif; ?>
-                            <p class="text-xs text-amber-600 font-semibold mt-0.5"><?= __('courses.show.min_pass') ?>: <?= $quiz['pass_percentage'] ?>%</p>
-                        </div>
-                        <?php if ($isManager): ?>
-                        <div class="flex items-center gap-1 flex-shrink-0">
-                            <button type="button" onclick="toggleQuizEditPanel(<?= $quiz['id'] ?>)"
-                               class="w-7 h-7 rounded-lg bg-white hover:bg-slate-100 flex items-center justify-center transition-colors border border-amber-200" title="<?= __('courses.show.edit_quiz') ?>">
-                                <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                            </button>
-                            <form method="POST" action="/cursos/<?= $course['id'] ?>/quizzes/<?= $quiz['id'] ?>/eliminar"
-                                  onsubmit="return confirm('<?= addslashes(__('courses.show.confirm_delete_quiz')) ?>')" class="inline">
-                                <?= \App\Core\CSRF::field() ?>
-                                <button type="submit" class="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors border border-red-200" title="<?= __('courses.show.delete_quiz') ?>">
-                                    <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                            </form>
-                        </div>
-                        <?php elseif (!$enrolled): ?>
-                        <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        <?php endif; ?>
-                    </li>
+                    <?php foreach ($quizzesAlFinal as $quiz): $renderQuiz($quiz, $quizBloqueado($quiz)); ?>
                     <?php endforeach; ?>
                 </ul>
 
