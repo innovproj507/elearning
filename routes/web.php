@@ -108,6 +108,7 @@ $router->post('/dashboard/perfil',               'DashboardController@updateProf
 // Las estáticas van antes de {id}.
 $router->get('/mensajes',                        'ChatController@index',  ['auth']);
 $router->get('/mensajes/no-leidos',              'ChatController@unread', ['auth']);
+$router->get('/mensajes/widget',                 'ChatController@widget', ['auth']);
 $router->post('/mensajes/nuevo',                 'ChatController@store',  ['auth']);
 $router->get('/mensajes/{id}',                   'ChatController@show',   ['auth']);
 $router->get('/mensajes/{id}/nuevos',            'ChatController@poll',   ['auth']);

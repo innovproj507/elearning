@@ -70,7 +70,17 @@ class ChatController extends Controller
         $asunto  = trim((string) $this->input('subject', ''));
         $cuerpo  = trim((string) $this->input('body', ''));
 
+        // El widget no pide asunto: se toma del comienzo del mensaje
+        if ($asunto === '' && $this->esAjax()) {
+            $asunto = mb_strimwidth(preg_replace('/\s+/', ' ', $cuerpo), 0, 60, '…', 'UTF-8');
+        }
+
         $r = $this->chat->abrir($curso > 0 ? $curso : null, $asunto, $cuerpo);
+        if ($this->esAjax()) {
+            isset($r['error'])
+                ? $this->json(['ok' => false, 'error' => $r['error']], 422)
+                : $this->json(['ok' => true, 'id' => $r['id']]);
+        }
         if (isset($r['error'])) {
             $this->flashError($r['error']);
             $this->redirect('/mensajes' . ($curso > 0 ? '?curso=' . $curso : ''));
@@ -115,7 +125,22 @@ class ChatController extends Controller
         if (!$datos) {
             $this->json(['ok' => false], 404);
         }
-        $this->json(['ok' => true, 'mensajes' => $datos['mensajes']]);
+        $this->json(['ok' => true, 'conversacion' => $datos['conversacion'], 'mensajes' => $datos['mensajes']]);
+    }
+
+    /** Datos del widget flotante: conversaciones y, para el alumnado, sus cursos. */
+    public function widget(array $params = []): void
+    {
+        $user = $this->authUser();
+        $datos = $this->chat->conversaciones();
+        $esAlumno = ($datos['rol'] ?? $user['role'] ?? '') === 'student';
+
+        $this->json([
+            'ok'             => true,
+            'esAlumno'       => $esAlumno,
+            'conversaciones' => $datos['conversaciones'],
+            'cursos'         => $esAlumno ? $this->chat->misCursos((int) $user['id']) : [],
+        ]);
     }
 
     /** Contador de mensajes sin leer para el menú. */
