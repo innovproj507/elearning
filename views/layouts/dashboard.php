@@ -219,5 +219,6 @@
     document.addEventListener('visibilitychange', contar);
 })();
 </script>
+<?php include __DIR__ . '/chat-flotante.php'; ?>
 </body>
 </html>

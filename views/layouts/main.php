@@ -72,9 +72,6 @@
                 <?php if (isset($_SESSION['user']) && ($_SESSION['user']['role'] ?? '') !== 'admin'): ?>
                     <a href="/dashboard" class="nav-link text-sm font-semibold text-gray-600 hover:text-brand-500 transition-colors pb-0.5"><?= __('layout.my_portal') ?></a>
                 <?php endif; ?>
-                <?php if (isset($_SESSION['user'])): ?>
-                    <a href="/mensajes" class="nav-link text-sm font-semibold text-gray-600 hover:text-brand-500 transition-colors pb-0.5"><?= __('layout.messages') ?></a>
-                <?php endif; ?>
             </div>
 
             <!-- Auth -->
@@ -203,5 +200,6 @@ $flashError   = \App\Core\Session::flash('error');
 </footer>
 
 <script src="/assets/js/api.js"></script>
+<?php include __DIR__ . '/chat-flotante.php'; ?>
 </body>
 </html>
