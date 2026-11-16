@@ -103,3 +103,12 @@ $router->get('/foro/{slug}',                        'ForumController@show');
 $router->get('/dashboard',                       'DashboardController@index',         ['auth']);
 $router->get('/dashboard/perfil',                'DashboardController@profile',       ['auth']);
 $router->post('/dashboard/perfil',               'DashboardController@updateProfile', ['auth']);
+
+// ─── Mensajes: chat interno alumno ↔ instructor/administración ───
+// Las estáticas van antes de {id}.
+$router->get('/mensajes',                        'ChatController@index',  ['auth']);
+$router->get('/mensajes/no-leidos',              'ChatController@unread', ['auth']);
+$router->post('/mensajes/nuevo',                 'ChatController@store',  ['auth']);
+$router->get('/mensajes/{id}',                   'ChatController@show',   ['auth']);
+$router->get('/mensajes/{id}/nuevos',            'ChatController@poll',   ['auth']);
+$router->post('/mensajes/{id}/enviar',           'ChatController@send',   ['auth']);

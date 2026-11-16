@@ -33,6 +33,8 @@ class ApiClient
      * CMS no respondió a tiempo.
      */
     private ?string $lastTransportError = null;
+    /** Mensaje que el CMS dio en su última respuesta de error 4xx (p. ej. validación). */
+    private ?string $lastApiMessage = null;
 
     private function __construct()
     {
@@ -65,6 +67,15 @@ class ApiClient
     public function lastTransportError(): ?string
     {
         return $this->lastTransportError;
+    }
+
+    /**
+     * Mensaje de la última respuesta 4xx del CMS ("El mensaje está vacío."), o null.
+     * Sirve para mostrar al usuario el motivo de un rechazo en vez de un error genérico.
+     */
+    public function lastApiMessage(): ?string
+    {
+        return $this->lastApiMessage;
     }
 
     public function clearCache(): void
@@ -220,6 +231,7 @@ class ApiClient
         } while ($intentos < 2);
 
         $this->lastTransportError = null;
+        $this->lastApiMessage = null;
 
         if ($error) {
             $this->lastTransportError = $error;
@@ -229,6 +241,11 @@ class ApiClient
 
         if ($httpCode >= 200 && $httpCode < 300) {
             return json_decode($response, true);
+        }
+
+        if ($httpCode >= 400 && $httpCode < 500) {
+            $cuerpo = json_decode((string) $response, true);
+            $this->lastApiMessage = is_array($cuerpo) && isset($cuerpo['message']) && is_string($cuerpo['message']) ? $cuerpo['message'] : null;
         }
 
         // Un 5xx es un fallo del CMS, no una respuesta de "no existe".

@@ -28,6 +28,7 @@ return [
     'categories'           => 'Categorías',
     'plugins'              => 'Plugins',
     'settings'             => 'Configuración',
+    'messages'             => 'Mensajes',
     'system'               => 'Sistema',
     'website'              => 'Sitio Web',
     'logout_btn'           => 'Cerrar Sesión',
