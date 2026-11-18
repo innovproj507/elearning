@@ -57,5 +57,5 @@ return [
     'CHAT_WS_URL'     => strpos($_SERVER['HTTP_HOST'] ?? '', 'pamel.edu.pa') !== false
                             ? 'wss://elearning.pamel.edu.pa/ws'
                             : 'ws://127.0.0.1:8081',
-    'CHAT_WS_ORIGINS' => 'https://elearning.pamel.edu.pa,http://elearning.test,https://elearning.test',
+    'CHAT_WS_ORIGINS' => 'https://elearning.pamel.edu.pa,https://pamel.edu.pa,http://elearning.test,https://elearning.test,http://pamel.test,https://pamel.test',
 ];
