@@ -13,6 +13,8 @@ $t = static fn(string $k) => htmlspecialchars(__($k), ENT_QUOTES, 'UTF-8');
 ?>
 <style>
 #cw-btn{position:fixed;right:20px;bottom:20px;z-index:60}
+@keyframes cwparpadeo{0%,100%{background:#2563eb;box-shadow:0 0 0 0 rgba(239,68,68,.6)}50%{background:#ef4444;box-shadow:0 0 0 14px rgba(239,68,68,0)}}
+#cw-btn.cw-parpadea{animation:cwparpadeo 1s ease-in-out infinite}
 #cw-panel{position:fixed;right:20px;bottom:90px;z-index:60;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);display:none;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(10,22,40,.28);overflow:hidden;font-family:inherit}
 #cw-panel.abierto{display:flex}
 #cw-panel header{background:#0a1628;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px}
@@ -175,11 +177,18 @@ $t = static fn(string $k) => htmlspecialchars(__($k), ENT_QUOTES, 'UTF-8');
     texto.addEventListener('input', () => { texto.style.height = 'auto'; texto.style.height = Math.min(texto.scrollHeight, 90) + 'px'; });
 
     atras.onclick = mostrarLista;
-    $('cw-cerrar').onclick = () => { panel.classList.remove('abierto'); pararSondeo(); };
+    $('cw-cerrar').onclick = () => { panel.classList.remove('abierto'); pararSondeo(); parpadeo(); };
     btn.onclick = () => {
         if (panel.classList.toggle('abierto')) { (vista === 'hilo' && convId) ? abrir(convId) : mostrarLista(); }
         else pararSondeo();
+        parpadeo();
     };
+
+    // La burbuja parpadea mientras haya mensajes sin leer y el panel esté cerrado
+    function parpadeo() {
+        const pendientes = !badge.classList.contains('hidden');
+        btn.classList.toggle('cw-parpadea', pendientes && !panel.classList.contains('abierto'));
+    }
 
     async function contar() {
         if (document.hidden) return;
@@ -187,6 +196,7 @@ $t = static fn(string $k) => htmlspecialchars(__($k), ENT_QUOTES, 'UTF-8');
             const n = parseInt((await get('/mensajes/no-leidos')).count, 10) || 0;
             badge.textContent = n > 99 ? '99+' : String(n);
             badge.classList.toggle('hidden', n === 0);
+            parpadeo();
         } catch (e) {}
     }
     contar(); setInterval(() => { if (!(window.ChatLive && window.ChatLive.vivo)) contar(); }, 30000);
