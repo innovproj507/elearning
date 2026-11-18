@@ -50,4 +50,12 @@ return [
     'MAIL_ENCRYPTION'   => 'tls',
     'MAIL_FROM_ADDRESS' => 'noreply@pamel.edu.pa',
     'MAIL_FROM_NAME'    => 'PAMEL LMS',
+
+    // ── Chat en vivo (WebSocket, ver bin/chat-ws.php) ─────────────────────
+    // Sin CHAT_WS_SECRET (mín. 32 caracteres) el chat sigue funcionando por sondeo.
+    'CHAT_WS_SECRET'  => '',
+    'CHAT_WS_URL'     => strpos($_SERVER['HTTP_HOST'] ?? '', 'pamel.edu.pa') !== false
+                            ? 'wss://elearning.pamel.edu.pa/ws'
+                            : 'ws://127.0.0.1:8081',
+    'CHAT_WS_ORIGINS' => 'https://elearning.pamel.edu.pa,http://elearning.test,https://elearning.test',
 ];

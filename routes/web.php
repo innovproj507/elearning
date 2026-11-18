@@ -109,6 +109,7 @@ $router->post('/dashboard/perfil',               'DashboardController@updateProf
 $router->get('/mensajes',                        'ChatController@index',  ['auth']);
 $router->get('/mensajes/no-leidos',              'ChatController@unread', ['auth']);
 $router->get('/mensajes/widget',                 'ChatController@widget', ['auth']);
+$router->get('/mensajes/ticket',                 'ChatController@ticket', ['auth']);
 $router->post('/mensajes/nuevo',                 'ChatController@store',  ['auth']);
 $router->get('/mensajes/{id}',                   'ChatController@show',   ['auth']);
 $router->get('/mensajes/{id}/nuevos',            'ChatController@poll',   ['auth']);

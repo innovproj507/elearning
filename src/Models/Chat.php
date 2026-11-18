@@ -54,7 +54,7 @@ class Chat extends Model
             'body'      => $cuerpo,
         ]);
         if ($r && ($r['status'] ?? '') === 'success') {
-            return ['id' => (int) $r['data']['id']];
+            return ['id' => (int) $r['data']['id'], 'destinatarios' => (array) ($r['data']['destinatarios'] ?? [])];
         }
         return ['error' => $this->api->lastApiMessage() ?? 'No se pudo enviar el mensaje. Inténtalo de nuevo.'];
     }
@@ -64,7 +64,7 @@ class Chat extends Model
     {
         $r = $this->api->post('/chat/conversations/' . $conversacionId . '/messages', ['body' => $cuerpo]);
         if ($r && ($r['status'] ?? '') === 'success') {
-            return ['id' => (int) $r['data']['id']];
+            return ['id' => (int) $r['data']['id'], 'destinatarios' => (array) ($r['data']['destinatarios'] ?? [])];
         }
         return ['error' => $this->api->lastApiMessage() ?? 'No se pudo enviar el mensaje. Inténtalo de nuevo.'];
     }

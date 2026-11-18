@@ -5,6 +5,8 @@
  * /mensajes/* (ChatController), así que sirve con sesión iniciada.
  */
 if (!isset($_SESSION['user'])) { return; }
+// La conexión en vivo va en todas las páginas, también en /mensajes (que no lleva la burbuja)
+include __DIR__ . '/chat-vivo.php';
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 if (str_starts_with((string) $rutaActual, '/mensajes')) { return; }
 $t = static fn(string $k) => htmlspecialchars(__($k), ENT_QUOTES, 'UTF-8');
@@ -150,7 +152,13 @@ $t = static fn(string $k) => htmlspecialchars(__($k), ENT_QUOTES, 'UTF-8');
         atras.style.display = ''; form.style.display = 'flex';
         body.innerHTML = '<div class="cw-aviso">…</div>';
         try { await cargar(0); } catch (e) { body.innerHTML = '<div class="cw-aviso cw-err">' + esc(T.error) + '</div>'; return; }
-        sondeo = setInterval(() => { if (!document.hidden) cargar(ultimo).catch(() => {}); }, 5000);
+        // Con el chat en vivo solo hace falta un sondeo lento de seguridad; sin él, cada 5 s
+        let tic = 0;
+        sondeo = setInterval(() => {
+            if (document.hidden) return;
+            if (window.ChatLive && window.ChatLive.vivo && ++tic % 12) return;
+            cargar(ultimo).catch(() => {});
+        }, 5000);
         texto.focus(); contar();
     }
 
@@ -181,7 +189,24 @@ $t = static fn(string $k) => htmlspecialchars(__($k), ENT_QUOTES, 'UTF-8');
             badge.classList.toggle('hidden', n === 0);
         } catch (e) {}
     }
-    contar(); setInterval(contar, 30000);
+    contar(); setInterval(() => { if (!(window.ChatLive && window.ChatLive.vivo)) contar(); }, 30000);
+
+    // Aviso en vivo: si es la conversación abierta se trae el mensaje al momento; si no, se
+    // actualiza el contador (y la lista si está a la vista) y la burbuja da un respingo
+    window.addEventListener('chat-live', ev => {
+        const cid = parseInt(ev.detail.cid, 10) || 0;
+        const abierto = panel.classList.contains('abierto');
+        if (abierto && vista === 'hilo' && convId && (!cid || cid === convId)) {
+            cargar(ultimo).then(() => contar()).catch(() => {});
+            return;
+        }
+        contar();
+        if (abierto && vista === 'lista') mostrarLista();
+        if (!abierto && cid) {
+            btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 500, iterations: 3 });
+        }
+    });
+    window.addEventListener('chat-live-estado', () => contar());
     document.addEventListener('visibilitychange', contar);
 })();
 </script>

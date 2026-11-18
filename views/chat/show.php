@@ -111,6 +111,12 @@ $ultimoId = $mensajes ? (int) end($mensajes)['id'] : 0;
         } catch (e) { /* sin red: el siguiente sondeo lo reintenta */ }
     }
 
+    // Chat en vivo: un aviso de esta conversación (o genérico al volver a la pestaña) trae lo nuevo
+    window.addEventListener('chat-live', ev => {
+        const cid = parseInt(ev.detail.cid, 10) || 0;
+        if (!cid || cid === convId) traerNuevos();
+    });
+
     async function enviar() {
         const texto = input.value.trim();
         if (!texto || enviandoAhora) return;
@@ -143,7 +149,9 @@ $ultimoId = $mensajes ? (int) end($mensajes)['id'] : 0;
         if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); enviar(); }
     });
 
-    setInterval(traerNuevos, 5000);
+    // Con el chat en vivo basta un sondeo lento de seguridad
+    let tic = 0;
+    setInterval(() => { if (window.ChatLive && window.ChatLive.vivo && ++tic % 12) return; traerNuevos(); }, 5000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) traerNuevos(); });
 })();
 </script>

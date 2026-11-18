@@ -92,3 +92,11 @@ $e = static fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+// Chat en vivo: un mensaje nuevo recarga la bandeja, salvo que se esté escribiendo en el formulario
+window.addEventListener('chat-live', () => {
+    const escribiendo = Array.from(document.querySelectorAll('textarea, input[name=subject]')).some(el => el.value.trim() !== '');
+    if (!escribiendo && !document.hidden) location.reload();
+});
+</script>

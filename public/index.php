@@ -48,7 +48,13 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
-header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.ckeditor.com https://static.cloudflareinsights.com; script-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.ckeditor.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.ckeditor.com; font-src 'self' https://fonts.gstatic.com https://cdn.ckeditor.com; img-src 'self' data: blob: http: https:; media-src 'self'; connect-src 'self' https://cdn.ckeditor.com https://cloudflareinsights.com; object-src 'none'; frame-ancestors 'self'");
+// El chat en vivo abre un WebSocket: su origen hay que permitirlo en connect-src
+$wsConnect = '';
+$wsPartes = parse_url((string) ($_ENV['CHAT_WS_URL'] ?? ''));
+if (!empty($wsPartes['scheme']) && !empty($wsPartes['host'])) {
+    $wsConnect = ' ' . $wsPartes['scheme'] . '://' . $wsPartes['host'] . (isset($wsPartes['port']) ? ':' . $wsPartes['port'] : '');
+}
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.ckeditor.com https://static.cloudflareinsights.com; script-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.ckeditor.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.ckeditor.com; font-src 'self' https://fonts.gstatic.com https://cdn.ckeditor.com; img-src 'self' data: blob: http: https:; media-src 'self'; connect-src 'self' https://cdn.ckeditor.com https://cloudflareinsights.com" . $wsConnect . "; object-src 'none'; frame-ancestors 'self'");
 
 use App\Core\Session;
 use App\Core\Language;
