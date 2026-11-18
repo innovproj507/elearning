@@ -28,6 +28,24 @@ use Workerman\Worker;
 define('BASE_PATH', dirname(__DIR__));
 require BASE_PATH . '/vendor/autoload.php';
 
+// Workerman se carga con su propio autoload PSR-4: así el vendor/composer del servidor
+// (que no lleva las dependencias de desarrollo) no hay que regenerarlo para el chat.
+spl_autoload_register(static function (string $clase): void {
+    // [prefijo del espacio de nombres, carpeta]: del más específico al más general
+    $mapa = [
+        ['Workerman\\Coroutine\\', '/vendor/workerman/coroutine/src/'],
+        ['Workerman\\',            '/vendor/workerman/coroutine/src/'],
+        ['Workerman\\',            '/vendor/workerman/workerman/src/'],
+    ];
+    foreach ($mapa as [$prefijo, $dir]) {
+        if (strncmp($clase, $prefijo, strlen($prefijo)) !== 0) {
+            continue;
+        }
+        $f = BASE_PATH . $dir . str_replace('\\', '/', substr($clase, strlen($prefijo))) . '.php';
+        if (is_file($f)) { require $f; return; }
+    }
+});
+
 // Misma configuración que el portal (config/app.php), sin depender del host HTTP
 foreach ((require BASE_PATH . '/config/app.php') as $k => $v) {
     $_ENV[$k] ??= $v;
